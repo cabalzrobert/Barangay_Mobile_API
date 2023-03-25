@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\WWW\stlpartylist_test_mobileapp_api</_PublishTargetUrl>
+    <History>True|2022-03-18T04:03:33.1664985Z;False|2022-03-18T12:03:15.1158150+08:00;True|2022-03-18T11:19:21.5778481+08:00;True|2022-03-15T12:08:19.5263560+08:00;True|2022-03-15T12:08:14.9574141+08:00;True|2022-03-15T08:56:44.0445139+08:00;False|2022-03-15T08:56:26.5096395+08:00;</History>
+  </PropertyGroup>
+</Project>

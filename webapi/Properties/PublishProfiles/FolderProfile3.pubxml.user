@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>\\18.139.66.234\www\prod_stlpartylist_mobile_api\publish</_PublishTargetUrl>
+    <History>True|2022-03-14T23:56:53.2663212Z;True|2022-03-15T07:30:27.2274197+08:00;True|2022-03-15T07:25:12.8335085+08:00;True|2022-03-14T08:25:43.8990766+08:00;True|2022-03-14T08:18:45.0465892+08:00;True|2022-03-14T08:10:19.2774903+08:00;</History>
+  </PropertyGroup>
+</Project>
