@@ -13,7 +13,7 @@ using webapi.App.RequestModel.Common;
 
 namespace webapi.Controllers.STLPartylistMembershipContorller.Features
 {
-    [Route("app/v1/stl")]
+    [Route("app/v1/stl/otherdocument")]
     [ApiController]
     [ServiceFilter(typeof(SubscriberAuthenticationAttribute))]
     public class BrgyOtherDocumentController:ControllerBase
@@ -26,17 +26,17 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
             _repo = repo;
         }
         [HttpPost]
-        [Route("reqotherdocument")]
+        [Route("history")]
         public async Task<IActionResult> Task01([FromBody] LegalDocument_Transaction request)
         {
             var result = await _repo.Load_OtherDocumentRequest(request);
             if (result.result == Results.Success)
-                return Ok(new { Status = "ok", lgldoctrans = result.lgldoctrans });
+                return Ok(result.lgldoctrans);
             return NotFound();
         }
 
         [HttpPost]
-        [Route("reqotherdocument/request")]
+        [Route("request/new")]
         public async Task<IActionResult> Task02([FromBody] LegalDocument_Transaction request)
         {
             var result = await _repo.RequestBrgyOtherDocumentAsync(request);
@@ -47,6 +47,17 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
             return NotFound();
         }
 
+        [HttpPost]
+        [Route("request/edit")]
+        public async Task<IActionResult> Task05([FromBody] LegalDocument_Transaction request)
+        {
+            var result = await _repo.RequestBrgyOtherDocumentAsync(request, true);
+            if (result.result == Results.Success)
+                return Ok(new { Status = "ok", Message = result.message, Content = request });
+            if (result.result == Results.Failed)
+                return Ok(new { Status = "error", Message = result.message });
+            return NotFound();
+        }
         [HttpPost]
         [Route("templatetype")]
         public async Task<IActionResult> Task03()

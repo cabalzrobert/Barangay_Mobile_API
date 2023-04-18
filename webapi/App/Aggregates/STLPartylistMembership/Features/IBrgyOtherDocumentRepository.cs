@@ -17,7 +17,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     [Service.ITransient(typeof(BrgyOtherDocumentRepository))]
     public interface IBrgyOtherDocumentRepository
     {
-        Task<(Results result, String message)> RequestBrgyOtherDocumentAsync(LegalDocument_Transaction req);
+        Task<(Results result, String message)> RequestBrgyOtherDocumentAsync(LegalDocument_Transaction req, bool isEdit = false);
         Task<(Results result, object lgldoctrans)> Load_OtherDocumentRequest(LegalDocument_Transaction req);
         Task<(Results result, object tpl)> Load_TemplateType();
         Task<(Results result, object tpldoc)> Load_TemplateDoc(string templatetypeid);
@@ -33,14 +33,14 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             _repo = repo;
         }
 
-        public async Task<(Results result, string message)> RequestBrgyOtherDocumentAsync(LegalDocument_Transaction req)
+        public async Task<(Results result, string message)> RequestBrgyOtherDocumentAsync(LegalDocument_Transaction req, bool isEdit = false)
         {
             var results = _repo.DSpQueryMultiple($"spfn_LGLDOC0A1", new Dictionary<string, object>()
             {
                 {"parmplid",account.PL_ID },
                 {"parmpgrpid",account.PGRP_ID },
-                {"parmlgldocid", req.LegalDocumentID },
-                {"parmcontrolno", req.ControlNo },
+                {"parmlgldocid", (!isEdit) ? "" : req.LegalDocumentID },
+                {"parmcontrolno", (!isEdit) ? "" : req.ControlNo },
                 {"parmtemplatetype",req.TemplateTypeID },
                 {"parmtemplatedoc",req.TemplateID },
                 {"parmrequestor",account.USR_ID }
@@ -55,6 +55,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     {
                         req.LegalDocumentID = row["LGLDOC_ID"].Str();
                         req.ControlNo = row["CONTROLNO"].Str();
+                        req.StatusRequestName = "Opened";
+                        req.Status = "0";
                         req.ApplicationDate = DateTime.Now.ToString("MMM dd, yyyy");
                     }
                     return (Results.Success, "Succesfull save");

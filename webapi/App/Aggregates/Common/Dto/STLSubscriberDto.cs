@@ -863,6 +863,265 @@ namespace webapi.App.Aggregates.Common.Dto
             return o;
         }
 
+
+        public static IEnumerable<dynamic> GetEducationAttainmentList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetEducationAttainment_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetEducationAttainment_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_EducationAttainment_List(e));
+        }
+        public static IDictionary<string, object> Get_EducationAttainment_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.USR_ID = data["USR_ID"].Str();
+            o.SEQ_NO = Convert.ToInt32(data["SEQ_NO"].Str());
+            o.EducLevel = data["SCH_LVL"].Str();
+            o.School = data["SCH_NM"].Str();
+            o.SchoolAddress = data["SCH_ADDRESS"].Str();
+            o.SchoolYear = data["SCH_YEAR"].Str();
+            o.Course = data["SCH_COURSE"].Str();
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetEmploymentHistoryList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetEmploymentHistory_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetEmploymentHistory_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_EmploymentHistory_List(e));
+        }
+        public static IDictionary<string, object> Get_EmploymentHistory_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.USR_ID = data["USR_ID"].Str();
+            o.SEQ_NO = Convert.ToInt32(data["SEQ_NO"].Str());
+            o.Company = data["COMPANY"].Str();
+            o.CompanyAddress = data["COMPANY_ADDRESS"].Str();
+            o.RenderedFrom = data["RENERED_FROM"].Str();
+            o.RenderedTo = data["RENERED_TO"].Str();
+            return o;
+        }
+
+
+        
+
+
+        public static IEnumerable<dynamic> GetOrganizationHistoryList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetOrganizationHistory_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetOrganizationHistory_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_OrganizationHistory_List(e));
+        }
+        public static IDictionary<string, object> Get_OrganizationHistory_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.USR_ID = data["USR_ID"].Str();
+            o.SEQ_NO = Convert.ToInt32(data["SEQ_NO"].Str());
+            o.OrganizationID = data["OrganizationID"].Str();
+            o.OrganizationName = data["OrganizationName"].Str();
+            o.OrganizationAbbr = data["OrganizatioAbbr"].Str();
+            o.EstablishedDate = data["EstablishedDate"].Str();
+            return o;
+        }
+        public static IEnumerable<dynamic> GetAllGovenmentIDList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllGovenmentID_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllGovenmentID_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllGovenmentID_List(e));
+        }
+        public static IDictionary<string, object> Get_AllGovenmentID_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.Num_Row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.GovernmentID = data["ID"].Str();
+            o.GovernmentID_NM = data["GOVERNMENTID"].Str();
+            return o;
+        }
+
+
+        public static IEnumerable<dynamic> GetAllEstablishmentList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllEstablishment_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllEstablishment_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllEstablishment_List(e));
+        }
+        public static IDictionary<string, object> Get_AllEstablishment_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.Est_ID = data["ESTID"].Str();
+            o.Est_Name = data["EST_NM"].Str();
+            o.Est_Type = data["EST_TYP"].Str();
+            o.ContactDetails = data["CON_DET"].Str();
+            o.Address = data["EST_ADR"].Str();
+            o.EmailAddress = data["EMAIL_ADR"].Str();
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetOrganizationList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetOrganization_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetOrganization_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_Organization_List(e));
+        }
+
+        public static IDictionary<string, object> Get_Organization_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.OrganizationID = data["OrganizationID"].Str();
+            o.OrganizationName = data["OrganizationName"].Str();
+            o.OrganizationAbbr = data["OrganizatioAbbr"].Str();
+            o.EstablishedDate = data["EstablishedDate"].Str();
+            return o;
+        }
+
+
+        public static IEnumerable<dynamic> GetGovernmentIssuedList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetGovernmentIssued_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetGovernmentIssued_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_GovernmentIssued_List(e));
+        }
+
+        public static IDictionary<string, object> Get_GovernmentIssued_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.GovernmentID = data["GOVVAL_ID"].Str();
+            o.GovernmentID_NM = data["GOVERNMENTID"].Str();
+            o.GovValIDNo = data["GOVVAL_ID_NO"].Str();
+            o.ImageUrl = data["ATTACHMENT"].Str();
+            o.Attachment = data["ATTACHMENT"].Str();
+            return o;
+        }
+
+
+
         public static IEnumerable<dynamic> GetRequestBrgyOtherDocumentList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
         {
             if (data == null) return null;
@@ -894,9 +1153,9 @@ namespace webapi.App.Aggregates.Common.Dto
             o.LegalDocumentID = data["LGLDOC_ID"].Str();
             o.ControlNo = data["CONTROLNO"].Str();
             o.TemplateID = data["TPL_ID"].Str();
-            o.TemplateNM = data["TPL_NM"].Str();
+            o.TemplateName = data["TPL_NM"].Str();
             o.TemplateTypeID = data["TPLTYP_ID"].Str();
-            o.TemplateTypeNM = data["TPLTTYP_NM"].Str();
+            o.TemplateTypeName = data["TPLTTYP_NM"].Str();
             o.UserID = data["REQUESTORID"].Str();
             o.RequestorNM = textInfo.ToUpper(textInfo.ToLower(data["REQUESTORNM"].Str()));
             o.MobileNo = data["MOB_NO"].Str();
@@ -923,7 +1182,8 @@ namespace webapi.App.Aggregates.Common.Dto
             o.MosValidity = (data["MOS_VAL"].Str() == "") ? 0 : Convert.ToInt32(data["MOS_VAL"].Str());
             o.ExpiryDate = (data["VALIDITYDATE"].Str() == "") ? "" : Convert.ToDateTime(data["VALIDITYDATE"].Str()).ToString("MMM dd, yyyy");
 
-            o.StatusRequest = data["STAT_REQ"].Str();
+            o.Status = data["STAT_REQ"].Str();
+            o.StatusRequestName = data["STAT_REQ_NM"].Str();
 
             o.Cancelled = (data["CANCELLED"].Str() == "") ? false : Convert.ToBoolean(data["CANCELLED"].Str());
             o.CancelledBy = textInfo.ToUpper(textInfo.ToLower(data["CANCELLEDBY"].Str()));
@@ -1043,7 +1303,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.PLID = data["PL_ID"].Str();
             o.PGRPID = data["PGRP_ID"].Str();
             o.TemplateTypeID = data["TPLTYP_ID"].Str();
-            o.TemplateTypeNM = data["TPLTTYP_NM"].Str();
+            o.TemplateTypeName = data["TPLTTYP_NM"].Str();
             return o;
         }
 
@@ -1075,7 +1335,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.PGRPID = data["PGRP_ID"].Str();
             o.TemplateTypeID = data["TPLTYP_ID"].Str();
             o.TemplateID = data["TPL_ID"].Str();
-            o.TemplateNM = data["TPL_NM"].Str();
+            o.TemplateName = data["TPL_NM"].Str();
             return o;
         }
 

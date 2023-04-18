@@ -62,6 +62,59 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string PGRP_ID;
         public string USR_ID;
     }
+    public class EducAttainment
+    {
+        public string PL_ID;
+        public string PGRP_ID;
+        public string Userid;
+        public int SEQ_NO;
+        public string EducLevel;
+        public string School;
+        public string SchoolAddress;
+        public string SchoolYear;
+        public string Course;
+    }
+    public class Organization 
+    {
+        public string PL_ID;
+        public string PGRP_ID;
+        public string Userid;
+        public int SEQ_NO;
+        public string OrganizationName;
+        public string OrganizationID;
+        public string OrganizationAbbr;
+        public string Estabalished;
+        public string Search;
+        public string NextFilter;
+    }
+
+    public class Employment_History
+    {
+        public string PL_ID;
+        public string PGRP_ID;
+        public string Userid;
+        public int SEQ_NO;
+        public string Company;
+        public string CompanyAddress;
+        public string RenderedFrom;
+        public string RenderedTo;
+    }
+    public class Government_Valid_ID
+    {
+        public string PL_ID;
+        public string PGRP_ID;
+        public string Userid;
+        public string GovValID;
+        public string GovernmentID;
+        public string GovValIDNo;
+        public string GovValIDURL;
+        public string Img;
+        public string Attachments;
+        public string Search;
+        public string NextFilter;
+        public string num_row;
+        public int SEQ_NO;
+    }
     public class Events
     {
         public string PL_ID;
@@ -212,6 +265,7 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string DateFrom;
         public string DateTo;
         public string Status;
+        public string StatusRequestName;
         public string num_row;
     }
 
