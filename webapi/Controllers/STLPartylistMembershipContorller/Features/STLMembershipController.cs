@@ -25,7 +25,7 @@ namespace webapi.Controllers.STLPartylistMembership.Features
 {
     [Route("app/v1/stl")]
     [ApiController]
-    [ServiceFilter(typeof(SubscriberAuthenticationAttribute))]
+    //[ServiceFilter(typeof(SubscriberAuthenticationAttribute))]
     public class STLMembershipController:ControllerBase
     {
 
@@ -40,13 +40,13 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         }
         [HttpPost]
         [Route("membership/new")]
-        public async Task<IActionResult> Task0b([FromBody] STLMembership request)
+        public async Task<IActionResult> Task0b([FromBody] ResidentsInfo request)
         {
-            var valresult = await validity(request);
-            if (valresult.result == Results.Failed)
-                return Ok(new { Status = "error", Message = valresult.message });
-            if (valresult.result != Results.Success)
-                return NotFound();
+            //var valresult = await validity(request);
+            //if (valresult.result == Results.Failed)
+            //    return Ok(new { Status = "error", Message = valresult.message });
+            //if (valresult.result != Results.Success)
+            //    return NotFound();
             var reporesult = await _repo.MembershipAsync(request);
 
             if (reporesult.result == Results.Success)
@@ -69,13 +69,14 @@ namespace webapi.Controllers.STLPartylistMembership.Features
 
         [HttpPost]
         [Route("membership/edit")]
-        public async Task<IActionResult> Task0c([FromBody] STLMembership request)
+        public async Task<IActionResult> Task0c([FromBody] ResidentsInfo request)
         {
-            var valresult = await validity(request);
-            if (valresult.result == Results.Failed)
-                return Ok(new { Status = "error", Message = valresult.message });
-            if (valresult.result != Results.Success)
-                return NotFound();
+            //Temporary comment
+            //var valresult = await validity(request);
+            //if (valresult.result == Results.Failed)
+            //    return Ok(new { Status = "error", Message = valresult.message });
+            //if (valresult.result != Results.Success)
+            //    return NotFound();
 
             var reporesult = await _repo.UpdateMembershipAsync(request);
             if (reporesult.result == Results.Success)
@@ -85,19 +86,19 @@ namespace webapi.Controllers.STLPartylistMembership.Features
             return NotFound();
         }
 
-        [HttpPost]
-        [Route("brgyoperator")]
-        public async Task<IActionResult> Task0d([FromBody] FilterRequest req)
-        {
-            var result = await _repo.Load_BrgyOperator(req);
-            if (result.result == Results.Success)
-                return Ok(new { Status = result.result, brgyoptr = result.bryoptr });
-            else if(result.result != Results.Null)
-                return Ok(new { Status = "error", brgyoptr = result.bryoptr });
-            return NotFound();
-        }
+        //[HttpPost]
+        //[Route("brgyoperator")]
+        //public async Task<IActionResult> Task0d([FromBody] FilterRequest req)
+        //{
+        //    var result = await _repo.Load_BrgyOperator(req);
+        //    if (result.result == Results.Success)
+        //        return Ok(new { Status = result.result, brgyoptr = result.bryoptr });
+        //    else if(result.result != Results.Null)
+        //        return Ok(new { Status = "error", brgyoptr = result.bryoptr });
+        //    return NotFound();
+        //}
 
-        private async Task<(Results result, string message)> validity(STLMembership request)
+        private async Task<(Results result, string message)> validity(ResidentsInfo request)
         {
             if (request == null)
                 return (Results.Null, null);

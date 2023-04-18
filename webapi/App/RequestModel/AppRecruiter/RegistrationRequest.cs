@@ -50,6 +50,14 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string SIT_ID;
         public string SIT_NM;
     }
+
+    public class Religion
+    {
+        public string PL_ID;
+        public string PGRP_ID;
+        public string CODE;
+        public string DESCRIPTION;
+    }
     public class Barangay
     {
         public string Code;
@@ -124,6 +132,81 @@ namespace webapi.App.RequestModel.AppRecruiter
 
         public string Img;
         public string ImageUrl;
+    }
+
+    public class ResidentsInfo
+    {
+        public string PL_ID;
+        public string PGRP_ID;
+        public string GroupRef;
+        public string SiteLeader;
+        public string Userid;
+        public string ACT_ID;
+
+        public string Firstname;
+        public string Lastname;
+        public string Middlename;
+        public string Nickname;
+
+        public string BirthDate;
+        public string Gender;
+        public string BloodType;
+        public string Citizenship;
+        public string MaritalStatus;
+        public string Religion;
+        public string Height;
+        public string Weight;
+
+        public string MobileNumber;
+        public string EmailAddress;
+        public string PrecinctNumber;
+        public string ClusterNumber;
+        public string Birthplace;
+        public string HomeAddress;
+        public string PresentAddress;
+        public string Occupation;
+        public string Skills;
+        public Person Father;
+        public Person Mother;
+        public Person Spouse;
+
+        public string Region;
+        public string Province;
+        public string Municipality;
+        public string Barangay;
+        public string Sitio;
+        public string SitioName;
+        public string LocationSite;
+        public string isLeader;
+        public string isMember;
+
+
+        public string AccountType;
+        public string Username;
+        public string Userpassword;
+        public string SubType;
+        public string Type;
+
+
+        public string Img;
+        public string ImageUrl;
+
+        public bool IsParentLiveInBarangay;
+        public bool IsLivingWithParents;
+        public bool IsSeniorCitizen;
+        public bool IsSingleParent;
+        public bool IsIndigent;
+        public bool IsPWD;
+        public bool IsRegisteredVoter;
+        public bool IsPermanentResident;
+
+        public class Person
+        {
+            public string Firstname;
+            public string Middlename;
+            public string Lastname;
+            public string Fullname;
+        }
     }
 
     public class BrgyClearance

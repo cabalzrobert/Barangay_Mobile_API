@@ -17,76 +17,94 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     [Service.ITransient(typeof(STLMembershipRepository))]
     public interface ISTLMembershipRepository
     {
-        //Task<(Results result, String message, STLSignInRequest signin, STLAccount account)> MembershipAsync(STLMembership membership, bool isUpdate = false);
-        Task<(Results result, String message)> MembershipAsync(STLMembership membership, bool isUpdate = false);
+        ////Task<(Results result, String message, STLSignInRequest signin, STLAccount account)> MembershipAsync(STLMembership membership, bool isUpdate = false);
+        Task<(Results result, String message)> MembershipAsync(ResidentsInfo membership, bool isUpdate = false);
 
-        Task<(Results result, String message)> UpdateMembershipAsync(STLMembership membership);
-        Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req);
+        Task<(Results result, String message)> UpdateMembershipAsync(ResidentsInfo membership);
+        //Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req);
     }
     public class STLMembershipRepository : ISTLMembershipRepository
     {
-        private readonly ISubscriber _identity;
+        //private readonly ISubscriber _identity;
         public readonly IRepository _repo;
-        public STLAccount account { get { return _identity.AccountIdentity(); } }
-        public STLMembershipRepository(ISubscriber identity, IRepository repo)
+        //public STLAccount account { get { return _identity.AccountIdentity(); } }
+        public STLMembershipRepository(/*ISubscriber identity,*/ IRepository repo)
         {
-            _identity = identity;
+            //_identity = identity;
             _repo = repo;
         }
 
 
-        public async Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req)
-        {
-            var result = _repo.DSpQueryMultiple($"dbo.spfn_BDB0E", new Dictionary<string, object>()
-            {
-                {"parmplid",account.PL_ID },
-                {"parmpgrpid",account.PGRP_ID },
-                {"parmsearch", req.Search }
-            });
-            if (result != null)
-                return (Results.Success, STLSubscriberDto.GetBrgyOperatorList(result.Read<dynamic>(), 1000));
+        //public async Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req)
+        //{
+        //    var result = _repo.DSpQueryMultiple($"dbo.spfn_BDB0E", new Dictionary<string, object>()
+        //    {
+        //        {"parmplid",account.PL_ID },
+        //        {"parmpgrpid",account.PGRP_ID },
+        //        {"parmsearch", req.Search }
+        //    });
+        //    if (result != null)
+        //        return (Results.Success, STLSubscriberDto.GetBrgyOperatorList(result.Read<dynamic>(), 1000));
 
-            return (Results.Null, null);
-        }
+        //    return (Results.Null, null);
+        //}
         //public async Task<(Results result, string message, STLSignInRequest signin, STLAccount account)> MembershipAsync(STLMembership membership, bool isUpdate = false)
-        public async Task<(Results result, string message)> MembershipAsync(STLMembership membership, bool isUpdate = false)
+        public async Task<(Results result, string message)> MembershipAsync(ResidentsInfo info, bool isUpdate = false)
         {
             var results = _repo.DSpQueryMultiple("dbo.spfn_BDABDBCAACBB01", new Dictionary<string, object>()
             {
-                {"parmplid",membership.PL_ID },
-                {"parmpgrpid",membership.PGRP_ID },
-                {"parmrefgrpid",membership.GroupRef },
-                {"parmrefldrid",membership.SiteLeader },
-                {"parmfnm",membership.Firstname },
-                {"parmlnm",membership.Lastname },
-                {"parmmnm",membership.Middlename },
-                {"parmnnm",membership.Nickname },
-                {"parmmobno",membership.MobileNumber },
-                {"parmgender",membership.Gender },
-                {"parmmstastus",membership.MaritalStatus },
-                {"parmemladd",membership.EmailAddress },
-                {"parmhmeadd",membership.HomeAddress },
-                {"parmprsntadd",membership.PresentAddress },
-                {"parmprecentno", membership.PrecentNumber},
-                {"parmclusterno", membership.ClusterNumber },
-                {"parmreg",membership.Region },
-                {"parmprov",membership.Province },
-                {"parmmun",membership.Municipality },
-                {"parmbrgy",membership.Barangay },
-                {"parmsitio",membership.Sitio },
-                {"parmbdate",membership.BirthDate },
-                {"parmctznshp",membership.Citizenship },
-                {"parmbldType",membership.BloodType },
-                {"parmntnlty",membership.Nationality },
-                {"parmoccptn",membership.Occupation },
-                {"parmsklls",membership.Skills },
-                {"parmprfpic",membership.ImageUrl },
-                {"parmImgUrl",membership.ImageUrl },
-                {"parmusertype",membership.AccountType },
+                {"parmplid",info.PL_ID },
+                {"parmpgrpid",info.PGRP_ID },
+                {"parmfnm",info.Firstname },
+                {"parmlnm",info.Lastname },
+                {"parmmnm",info.Middlename },
+                {"parmnnm",info.Nickname },
+                {"parmmobno",info.MobileNumber },
+                {"parmgender",info.Gender },
+                {"parmmstastus",info.MaritalStatus },
+                {"parmemladd",info.EmailAddress },
+                {"parmhmeadd",info.HomeAddress },
+                {"parmprsntadd",info.PresentAddress},
+                {"parmprecentno", info.PrecinctNumber},
+                {"parmclusterno", info.ClusterNumber },
+                {"parmreg",info.Region },
+                {"parmprov",info.Province },
+                {"parmmun",info.Municipality },
+                {"parmbrgy",info.Barangay },
+                {"parmsitio",info.Sitio },
+                {"parmbdate",info.BirthDate },
+                {"parmctznshp",info.Citizenship },
+                {"parmbldType",info.BloodType },
+                {"parmoccptn",info.Occupation },
+                {"parmsklls",info.Skills },
+                {"parmprfpic",info.ImageUrl },
+                {"parmImgUrl",info.ImageUrl },
+                {"parmusertype",info.AccountType },
 
-                {"parmusername",membership.Username },
+                {"parmusername",info.Username },
                 //{"parmpassword",membership.Userpassword },
-                {"parmusrid",(isUpdate?membership.Userid:"") },
+                {"parmusrid",(isUpdate?info.Userid:"") },
+                {"parmrlgn",info.Religion },
+                {"parmhght",info.Height },
+                {"parmwght",info.Weight+"kg" },
+                {"parmbrtpl",info.Birthplace },
+                //{"parmfrfnm",info?.Father.Firstname ?? null},
+                //{"parmfrmnm",info?.Father.Middlename ?? null},
+                //{"parmfrlnm",info?.Father.Lastname ?? null},
+                //{"parmfrfllnm",info?.Father.Fullname ?? null},
+                //{"parmmrfnm",info?.Mother.Firstname ?? null},
+                //{"parmmrmnm",info?.Mother.Middlename ?? null},
+                //{"parmmrlnm",info?.Mother.Lastname ?? null},
+                //{"parmmrfllnm",info?.Mother.Fullname ?? null},
+                //{"parmspfllnm",info?.Spouse.Fullname ?? null},
+                //{"parmsplb",(info.IsParentLiveInBarangay) ? 1 : 0},
+                {"parmslwp",(info.IsLivingWithParents) ? 1 : 0},
+                {"parmssrctzn",(info.IsSeniorCitizen) ? 1 : 0},
+                {"parmssp",(info.IsSingleParent) ? 1 : 0},
+                {"parmsindgt",(info.IsIndigent) ? 1 : 0},
+                {"parmspwd",(info.IsPWD) ? 1 : 0},
+                {"parmrgstvtr",(info.IsRegisteredVoter) ? 1 : 0},
+                {"parmspermrsdnt",1},
             }).ReadSingleOrDefault();
             if (results != null)
             {
@@ -107,7 +125,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     //else
                     //{
                     //return (Results.Success, "Member Account Successful save", null, STLSubscriberDto.STLUpdateMember(membership));
-                    return (Results.Success, "Member Account Successful save, login using your register mobile number and temporary password 123456");
+                    return (Results.Success, "submission completed. For verification, kindly wait 24 hours.");
                 //}
 
                 else if (ResultCode == "2")
@@ -127,52 +145,109 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             return (Results.Null, null);
         }
 
-        public async Task<(Results result, string message)> UpdateMembershipAsync(STLMembership membership)
+        public async Task<(Results result, string message)> UpdateMembershipAsync(ResidentsInfo info)
         {
-            bool isleader = Convert.ToBoolean(membership.isLeader);
+            //bool isleader = Convert.ToBoolean(info.isLeader);
             var results = _repo.DSpQueryMultiple("dbo.spfn_BDABDBCAACBB05", new Dictionary<string, object>()
             {
-                {"parmplid",membership.PL_ID },
-                {"parmpgrpid",membership.PGRP_ID },
+                {"parmplid",info.PL_ID },
+                {"parmpgrpid",info.PGRP_ID },
+                {"parmfnm",info.Firstname },
+                {"parmlnm",info.Lastname },
+                {"parmmnm",info.Middlename },
+                {"parmnnm",info.Nickname },
+                {"parmmobno",info.MobileNumber },
+                {"parmgender",info.Gender },
+                {"parmmstastus",info.MaritalStatus },
+                {"parmemladd",info.EmailAddress },
+                {"parmhmeadd",info.HomeAddress },
+                {"parmprsntadd",info.PresentAddress},
+                {"parmprecentno", info.PrecinctNumber},
+                {"parmclusterno", info.ClusterNumber },
+                {"parmreg",info.Region },
+                {"parmprov",info.Province },
+                {"parmmun",info.Municipality },
+                {"parmbrgy",info.Barangay },
+                {"parmsitio",info.Sitio },
+                {"parmbdate",info.BirthDate },
+                {"parmctznshp",info.Citizenship },
+                {"parmbldType",info.BloodType },
+                {"parmoccptn",info.Occupation },
+                {"parmsklls",info.Skills },
+                {"parmprfpic",info.ImageUrl },
+                {"parmImgUrl",info.ImageUrl },
+                {"parmusertype",info.AccountType },
 
-                {"parmrefgrpid",membership.GroupRef },
-                {"parmrefldrid", membership.SiteLeader },
+                {"parmusername",info.Username },
+                {"parmusrid",info.Userid},
 
-                {"parmfnm",membership.Firstname },
-                {"parmlnm",membership.Lastname },
-                {"parmmnm",membership.Middlename },
-                {"parmnnm",membership.Nickname },
-                {"parmmobno",membership.MobileNumber },
-                {"parmgender",membership.Gender },
-                {"parmmstastus",membership.MaritalStatus },
-                {"parmemladd",membership.EmailAddress },
+                {"parmrlgn",info.Religion },
+                {"parmhght",info.Height },
+                {"parmwght",info.Weight+"kg" },
+                {"parmbrtpl",info.Birthplace },
+
+                {"parmfrfnm",info.Father?.Firstname ?? null},
+                {"parmfrmnm",info.Father?.Middlename ?? null},
+                {"parmfrlnm",info.Father?.Lastname ?? null},
+                {"parmfrfllnm",info.Father?.Fullname ?? null},
+                {"parmmrfnm",info.Mother?.Firstname ?? null},
+                {"parmmrmnm",info.Mother?.Middlename ?? null},
+                {"parmmrlnm",info.Mother?.Lastname ?? null},
+                {"parmmrfllnm",info.Mother?.Fullname ?? null},
+                {"parmspfnm",info.Spouse?.Firstname ?? null},
+                {"parmspmnm",info.Spouse?.Middlename ?? null},
+                {"parmsplnm",info.Spouse?.Lastname ?? null},
+                {"parmspfllnm",info.Spouse?.Fullname ?? null},
+
+                {"parmsplb",(info.IsParentLiveInBarangay) ? 1 : 0},
+                {"parmslwp",(info.IsLivingWithParents) ? 1 : 0},
+                {"parmssrctzn",(info.IsSeniorCitizen) ? 1 : 0},
+                {"parmssp",(info.IsSingleParent) ? 1 : 0},
+                {"parmsindgt",(info.IsIndigent) ? 1 : 0},
+                {"parmspwd",(info.IsPWD) ? 1 : 0},
+                {"parmrgstvtr",(info.IsRegisteredVoter) ? 1 : 0}
+
+                //{"parmplid",membership.PLID },
+                //{"parmpgrpid",membership.PGRPID },
+
+                //{"parmrefgrpid",membership.GroupRef },
+                //{"parmrefldrid", membership.SiteLeader },
+
+                //{"parmfnm",membership.Firstname },
+                //{"parmlnm",membership.Lastname },
+                //{"parmmnm",membership.Middlename },
+                //{"parmnnm",membership.Nickname },
+                //{"parmmobno",membership.MobileNumber },
+                //{"parmgender",membership.Gender },
+                //{"parmmstastus",membership.MaritalStatus },
+                //{"parmemladd",membership.EmailAddress },
 
 
-                {"parmprecentno", membership.PrecentNumber},
-                {"parmclusterno", membership.ClusterNumber },
+                //{"parmprecentno", membership.PrecentNumber},
+                //{"parmclusterno", membership.ClusterNumber },
 
-                {"parmhmeadd",membership.HomeAddress },
-                {"parmprsntadd",membership.PresentAddress },
+                //{"parmhmeadd",membership.HomeAddress },
+                //{"parmprsntadd",membership.PresentAddress },
 
-                {"parmreg",membership.Region },
-                {"parmprov",membership.Province },
-                {"parmmun",membership.Municipality },
-                {"parmbrgy",membership.Barangay },
-                {"parmsitio", membership.Sitio },
+                //{"parmreg",membership.Region },
+                //{"parmprov",membership.Province },
+                //{"parmmun",membership.Municipality },
+                //{"parmbrgy",membership.Barangay },
+                //{"parmsitio", membership.Sitio },
 
-                {"parmbdate",membership.BirthDate },
-                {"parmctznshp",membership.Citizenship },
-                {"parmbldType",membership.BloodType },
-                {"parmntnlty",membership.Nationality },
-                {"parmoccptn",membership.Occupation },
-                {"parmsklls",membership.Skills },
-                {"parmprfpic",membership.ImageUrl },
-                {"parmImgUrl",membership.ImageUrl },
+                //{"parmbdate",membership.BirthDate },
+                //{"parmctznshp",membership.Citizenship },
+                //{"parmbldType",membership.BloodType },
+                //{"parmntnlty",membership.Nationality },
+                //{"parmoccptn",membership.Occupation },
+                //{"parmsklls",membership.Skills },
+                //{"parmprfpic",membership.ImageUrl },
+                //{"parmImgUrl",membership.ImageUrl },
 
-                {"parmusertype",membership.AccountType },
-                {"parmusername",membership.Username },
-                //{"parmpassword",membership.Userpassword },
-                {"parmusrid",membership.Userid },
+                //{"parmusertype",membership.AccountType },
+                //{"parmusername",membership.Username },
+                ////{"parmpassword",membership.Userpassword },
+                //{"parmusrid",membership.Userid },
             }).ReadSingleOrDefault();
             if (results != null)
             {
