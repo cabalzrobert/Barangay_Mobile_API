@@ -38,6 +38,12 @@ namespace webapi.App.Model.User
         public string FLL_NM;
         public string NCK_NM;
 
+        public string PLC_BRT;
+        public string HEIGHT;
+        public decimal WEIGHT;
+        public string REL;
+        public string DESCRIPTION;
+
         public string MOB_NO;
         public string EML_ADD;
         public string HM_ADDR;
@@ -50,6 +56,10 @@ namespace webapi.App.Model.User
         public string LOC_SIT;
         public string LOC_SIT_NM;
         public string Username;
+
+        public Person Father;
+        public Person Mother;
+        public Person Spouse;
 
         public string GNDR;
         public string MRTL_STAT;
@@ -70,5 +80,22 @@ namespace webapi.App.Model.User
         public bool sActive;
         public bool IsSessionExpired;
         public bool IsLogin;
+
+        public bool SLVNG_WPRNT;
+        public bool SSNR_CTZN;
+        public bool SSGL_PRNT;
+        public bool SINDGT;
+        public bool S_PWD;
+        public bool SPRNT_LVS_BRGY;
+        public bool SRGS_VTR;
+        public bool SPERM_RES;
+
+        public class Person
+        {
+            public string Firstname;
+            public string Middlename;
+            public string Lastname;
+            public string Fullname;
+        }
     }
 }
