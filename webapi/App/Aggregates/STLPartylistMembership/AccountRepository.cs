@@ -149,6 +149,27 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         LOC_BRGY_NM = textInfo.ToUpper(row["LOC_BRGY_NM"].Str()),
                         LOC_SIT = row["LOC_SIT"].Str(),
                         LOC_SIT_NM = textInfo.ToUpper(row["LOC_SIT_NM"].Str()),
+                        PLC_BRT = textInfo.ToUpper(row["PLC_BRT"].Str()),
+                        HEIGHT = row["HEIGHT"].Str(),
+                        WEIGHT = Decimal.Parse(row["WEIGHT"].Str().Replace("kg","")),
+                        REL = row["REL"].Str(),
+                        DESCRIPTION = row["DESCRIPTION"].Str(),
+                         
+                        Father = new STLAccount.Person { 
+                            Firstname = row["FR_FRST_NM"].Str(), 
+                            Middlename = row["FR_MI_NM"].Str(), 
+                            Lastname = row["FR_LST_NM"].Str(),
+                            Fullname = row["FR_FLL_NM"].Str()},
+                        Mother = new STLAccount.Person {
+                            Firstname = row["MOM_FRST_NM"].Str(),
+                            Middlename = row["MOM_MI_NM"].Str(),
+                            Lastname = row["MOM_LST_NM"].Str(),
+                            Fullname = row["MOM_FLL_NM"].Str()},
+                        Spouse = new STLAccount.Person { 
+                            Firstname = row["SP_FRST_NM"].Str(),
+                            Middlename = row["SP_MI_NM"].Str(),
+                            Lastname = row["SP_LST_NM"].Str(),
+                            Fullname = row["SP_FLL_NM"].Str()},
 
                         GNDR = row["GNDR"].Str(),
                         MRTL_STAT = row["MRTL_STAT"].Str(),
@@ -166,7 +187,16 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         TTL_BIZ = Convert.ToInt32(row["TTL_BIZ"].Str()),
                         SUB_TYP = row["SUB_TYP"].Str(),
                         sActive = true,
-                        IsLogin = true
+                        IsLogin = true,
+
+                        SLVNG_WPRNT = (bool)row["SLVNG_WPRNT"],
+                        SSNR_CTZN = (bool)row["SSNR_CTZN"],
+                        SSGL_PRNT = (bool)row["SSGL_PRNT"],
+                        SINDGT = (bool)row["SINDGT"],
+                        S_PWD = (bool)row["S_PWD"],
+                        SPRNT_LVS_BRGY = (bool)row["SPRNT_LVS_BRGY"],
+                        SRGS_VTR = (bool)row["SRGS_VTR"],
+                        SPERM_RES = (bool)row["SPERM_RES"]
                     }); 
                 }
                 else if (ResultCode == "52")
@@ -177,6 +207,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                     return (SignInResults.Failed, "Party List has blocked by admin", null);
                 else if (ResultCode == "23")
                     return (SignInResults.Failed, "Your Group has blocked by admin", null);
+                else if (ResultCode == "101")
+                    return (SignInResults.Failed, "Your account has not been verified", null);
                 return (SignInResults.Failed, "Invalid mobile number and password! Please try again", null);
             }
             return (SignInResults.Null, null, null);
