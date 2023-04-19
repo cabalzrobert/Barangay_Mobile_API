@@ -71,6 +71,7 @@ namespace webapi.Controllers.STLPartylistMembership
             if (request == null) return NotFound();
             if (!(request.DeviceID.Str().Equals("web") || request.DeviceName.Str().Equals("web")))
             {
+                request.ApkVersion = request.ApkVersion.Replace(" ", "_");
                 var chkResult = await _repo.ApkUpdateCheckerAsync(request);
                 if (chkResult.result == SignInResults.ApkUpdate)
                 {
