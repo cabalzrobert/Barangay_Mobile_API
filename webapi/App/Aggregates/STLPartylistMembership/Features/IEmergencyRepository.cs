@@ -1,0 +1,76 @@
+﻿using Infrastructure.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using webapi.App.Aggregates.Common;
+using webapi.App.Aggregates.SubscriberAppAggregate.Common;
+using webapi.App.Model.User;
+using Comm.Commons.Extensions;
+using webapi.Commons.AutoRegister;
+using webapi.App.RequestModel.AppRecruiter;
+using webapi.App.Aggregates.Common.Dto;
+using webapi.App.RequestModel.Feature;
+
+namespace webapi.App.Aggregates.STLPartylistMembership.Features
+{
+    [Service.ITransient(typeof(EmergencyRepository))]
+    public interface IEmergencyRepository
+    {
+        Task<(Results result, object list)> LoadEmergencyType(EmergencyRequest request);
+        Task<(Results result, string message)> SendEmergencyAlert(EmergencyRequest request);
+    }
+    public class EmergencyRepository : IEmergencyRepository
+    {
+        private readonly ISubscriber _identity;
+        public readonly IRepository _repo;
+        public STLAccount account { get { return _identity.AccountIdentity(); } }
+        public EmergencyRepository(ISubscriber identity, IRepository repo)
+        {
+            _identity = identity;
+            _repo = repo;
+        }
+
+        public async Task<(Results result, object list)> LoadEmergencyType(EmergencyRequest request)
+        {
+            var result = _repo.DSpQueryMultiple($"dbo.spfn_BIMSSMEMGY0A00",new Dictionary<string, object>()
+            {
+                {"parmplid", request.PL_ID },
+                {"parmpgrpid", request.PGRP_ID }
+            });
+            if (result != null)
+            {
+                return (Results.Success, STLSubscriberDto.GetEmergency_List(result.Read<dynamic>()));
+            }
+            return (Results.Null, null);
+        }
+
+        public async Task<(Results result, string message)> SendEmergencyAlert(EmergencyRequest request)
+        {
+            var results = _repo.DSpQuery<dynamic>($"dbo.spfn_BIMSMEMGY0B", new Dictionary<string, object>()
+                {
+                    {"parmplid", request.PL_ID},
+                    {"parmpgrpid", request.PGRP_ID},
+                    {"parmemgytypid", request.EmergencyId},
+                    {"parmusrid", request.UserId},
+                    {"parmsndrno", request.SenderMobileno},
+                    {"parmmsgtxt", request.EmergencyMessage},
+                    {"parmlat", request.latitude},
+                    {"parmlong", request.longitude}
+                }).FirstOrDefault();
+            if (results != null)
+            {
+                var row = ((IDictionary<string, object>)results);
+                string ResultCode = row["RESULT"].Str();
+                if (ResultCode == "1")
+                    return (Results.Success, "Successfully Send");
+                else if (ResultCode == "0")
+                    return (Results.Failed, "Already exist");
+                else if (ResultCode == "2")
+                    return (Results.Null, null);
+            }
+            //return (Results.Null, null, null, null);
+            return (Results.Null, null);
+        }
+    }
+}

@@ -659,6 +659,56 @@ namespace webapi.App.Aggregates.Common.Dto
             return o;
         }
 
+        public static IEnumerable<dynamic> GetRequstCedula_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = data.Select(e => DesirializeCedulaRequest(e));
+            return items;
+        }
+
+        public static IDictionary<string, object> DesirializeCedulaRequest(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            o.RequestId = data["CTC_ID"].Str();
+            o.AmountPaid = data["TTL_AMT_PD"].Str();
+            o.isClaimable = data["CLM_DT"].Str() == "" ? false : (DateTime.Parse(data["CLM_DT"].Str()).Date == DateTime.Now.Date);
+            o.isClaimed = Int64.Parse(data["S_CLM"].Str()) == 1 ? true : false;
+            o.ReleaseDate = data["RLS_DT"].Str() == "" ? null : DateTime.Parse(data["RLS_DT"].Str()).ToString("MM/dd/yyyy");
+            o.CancelledDate = data["CNCL_DT"].Str() == "" ? null : DateTime.Parse(data["CNCL_DT"].Str()).ToString("MM/dd/yyyy");
+            o.isCanceled = Int64.Parse(data["S_CNCL"].Str()) == 1 ? true : false;
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetEmergency_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = data.Select(e => DesirializeEmergencyList(e));
+            return items;
+        }
+
+        public static IDictionary<string, object> DesirializeEmergencyList(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            o.EmergencyId = data["EMGY_TYP_ID"].Str();
+            o.EmergencyName = data["EMERGENCY_TYPE"].Str();
+            o.EmergencyMessage = data["TEXT_MESSAGE"].Str();
+            return o;
+        }
+
+        public static string GetSeries(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = data.Select(e => DesirializeSeries(e)).FirstOrDefault().Series;
+            return items;
+        }
+
+        public static IDictionary<string, object> DesirializeSeries(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            o.Series = data["SERIES"].Str().PadLeft(5,'0');
+            return o;
+        }
+
         public static IEnumerable<dynamic> GetAllRegisterBusinessList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
         {
             if (data == null) return null;
