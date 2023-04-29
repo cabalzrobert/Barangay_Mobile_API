@@ -151,7 +151,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         LOC_SIT_NM = textInfo.ToUpper(row["LOC_SIT_NM"].Str()),
                         PLC_BRT = textInfo.ToUpper(row["PLC_BRT"].Str()),
                         HEIGHT = row["HEIGHT"].Str(),
-                        WEIGHT = Decimal.Parse(row["WEIGHT"].Str().Replace("kg","")),
+                        WEIGHT = (row["WEIGHT"].Str().Replace("kg", "") == "") ? 0 : Decimal.Parse(row["WEIGHT"].Str().Replace("kg","")),
                         REL = row["REL"].Str(),
                         DESCRIPTION = row["DESCRIPTION"].Str(),
                          

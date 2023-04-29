@@ -70,6 +70,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 }
                 else if (ResultCode == "2")
                     return (Results.Failed, "Please check your data entry. Please try again");
+                else if (ResultCode == "3")
+                    return (Results.Failed, "Duplicate Educational Level. Please try again");
                 return (Results.Failed, "Somethings wrong in your data. Please try again");
             }
             return (Results.Null, null);
