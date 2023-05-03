@@ -43,8 +43,11 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     {"parmmobctcid", request.RequestId},
                     {"parmreqby", request.RequestBy},
                     {"parmgeb", request.GrossBusinessIncome},
+                    {"parmgebtx", request.GEBTax},
                     {"parmgep", request.Salary},
+                    {"parmgeptx", request.GEPTax},
                     {"parmirp", request.RealPropertyIncome},
+                    {"parmirptx", request.IRPTax},
                     {"parmreqdt", DateTime.Now.ToString("MMMM dd, yyyy hh:mm:ss tt")}
                 }).FirstOrDefault();
             if (results != null)
