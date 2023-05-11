@@ -9,6 +9,8 @@ namespace webapi.App.RequestModel.Feature
         public string TransactionNo;
         public String Sitio;
         public string SitioName;
+        public string Latitude;
+        public string Longitude;
         public String Subject;
         public String Body;
         public String CorrectiveAction;

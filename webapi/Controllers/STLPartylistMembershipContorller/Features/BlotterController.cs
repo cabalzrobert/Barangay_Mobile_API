@@ -101,24 +101,33 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
             //request.iAttachments = "";
             for (int i = 0; i < request.Attachments.Count; i++)
             {
-                var attachment = request.Attachments[i];
-                byte[] bytes = Convert.FromBase64String(attachment.Str());
-                if (bytes.Length == 0)
-                    return (Results.Failed, "Make sure selected image is valid.");
-
-                var res = await ImgService.SendAsync(bytes);
-                bytes.Clear();
-                if (res == null)
-                    return (Results.Failed, "Please contact to admin.");
-
-                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
-                if (json["status"].Str() != "error")
+                var attachment = request.Attachments[i].Str();
+                if (attachment.IsEmpty()) continue;
+                if (attachment.StartsWith("http"))
                 {
-                    string url = json["url"].Str();
-                    sb.Append($"<item CASENO_URL=\"{ url }\" />");
-                    request.Attachments[i] = url;
+                    sb.Append($"<item LNK_URL=\"{attachment}\" />");
                 }
-                else return (Results.Failed, "Make sure selected image is valid.");
+                else
+                {
+                    byte[] bytes = Convert.FromBase64String(attachment);
+                    if (bytes.Length == 0)
+                        return (Results.Failed, "Make sure selected image is valid.");
+
+                    var res = await ImgService.SendAsync(bytes);
+                    bytes.Clear();
+                    if (res == null)
+                        return (Results.Failed, "Please contact to admin.");
+
+                    var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
+                    if (json["status"].Str() != "error")
+                    {
+                        string url = json["url"].Str();
+                        sb.Append($"<item CASENO_URL=\"{ url }\" />");
+                        request.Attachments[i] = url;
+                    }
+                    else return (Results.Failed, "Make sure selected image is valid.");
+                }
+                
             }
             if (sb.Length > 0)
             {

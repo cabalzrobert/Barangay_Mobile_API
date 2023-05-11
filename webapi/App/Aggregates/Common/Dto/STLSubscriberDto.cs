@@ -142,6 +142,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.IssuedDate = (data["RGS_TRN_TS"].Str() == "") ? "" : Convert.ToDateTime(data["RGS_TRN_TS"].Str()).ToString("MMM dd, yyyy");
             o.ActionDate = (data["FXD_TRN_TS"].Str()=="") ? "" : Convert.ToDateTime(data["FXD_TRN_TS"].Str()).ToString("MMM dd, yyyy");
             o.TotalAttachment = Convert.ToInt32(data["TTL_ATTCHMNT"].Str());
+            o.URLAttachment = data["ATTCHMNT"].Str();
             //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());
             return o;
         }
@@ -252,6 +253,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.ReleasedBy = data["RSLV_BY"].Str();
             o.ReleaseDate = (data["DT_RSLV"].Str() == "") ? "" : Convert.ToDateTime(data["DT_RSLV"].Str()).ToString("MMM dd, yyyy");
             o.TotalAttachment = Convert.ToInt32(data["TTL_ATTCHMNT"].Str());
+            o.URLAttachment = data["ATTCHMNT"].Str();
             o.ImageUrl = data["IMG_URL"].Str();
             return o;
         }
@@ -1095,6 +1097,52 @@ namespace webapi.App.Aggregates.Common.Dto
             o.EmailAddress = data["EMAIL_ADR"].Str();
             return o;
         }
+
+
+        public static IEnumerable<dynamic> GetAllEmergencyAlertList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllEmergencyAlert_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllEmergencyAlert_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllEmergencyAlert_List(e));
+        }
+        public static IDictionary<string, object> Get_AllEmergencyAlert_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.EmgyID = data["EMGY_ID"].Str();
+            o.EmgyTypID = data["EMGY_TYP_ID"].Str();
+            o.EmgyType = data["EMERGENCY_TYPE"].Str();
+            o.Message = data["TEXT_MESSAGE"].Str();
+            o.UserID = data["USR_ID"].Str();
+            o.FUllName = data["FLL_NM"].Str();
+            o.AlertDate = data["ALRT_DATE"].Str();
+            o.GeolocationLat = data["GEO_LOC_LAT"].Str();
+            o.GeolocationLong = data["GEO_LOC_LONG"].Str();
+            o.Closed_Details = data["CLOSED_DETAILS"].Str();
+            o.ClosedDate = data["CLOSED_DATE"].Str();
+            o.Closed_Type = Convert.ToInt32(data["CLOSED_TYP"]);
+            o.Closed_TypeName = data["CLOSED_TYP_NM"].Str();
+            return o;
+        }
+
+
 
         public static IEnumerable<dynamic> GetOrganizationList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
         {

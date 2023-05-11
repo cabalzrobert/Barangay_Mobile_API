@@ -84,6 +84,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                                 { "parmtckt", request.TicketNo },
                                 { "parmsbjct", request.Subject },
                                 { "parmbody", request.Body },
+                                { "parmgeoloclat", request.Latitude },
+                                { "parmgeoloclong", request.Longitude },
                                 { "parmxattchmnt", request.iAttachments },
                                 { "parmdvcnm", request.DeviceName },
                                 { "parmdvcmdlid", request.DeviceID },
@@ -223,7 +225,11 @@ h1,h2,h3,h4{{ margin: 2px; vertical-align: bottom; }}
                 {"parmsrch", request.Search}
             });
             if (result != null)
+            {
+                //object concernlist = STLSubscriberDto.GetAllIssuesConcernList(result.Read<dynamic>(), request.Userid, 100);
                 return (Results.Success, STLSubscriberDto.GetAllIssuesConcernList(result.Read<dynamic>(), request.Userid, 100));
+            }
+                
             return (Results.Null, null);
         }
 

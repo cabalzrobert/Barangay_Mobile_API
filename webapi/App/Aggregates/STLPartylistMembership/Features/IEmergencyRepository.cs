@@ -11,6 +11,7 @@ using webapi.Commons.AutoRegister;
 using webapi.App.RequestModel.AppRecruiter;
 using webapi.App.Aggregates.Common.Dto;
 using webapi.App.RequestModel.Feature;
+using webapi.App.RequestModel.Common;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -19,6 +20,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     {
         Task<(Results result, object list)> LoadEmergencyType(EmergencyRequest request);
         Task<(Results result, string message)> SendEmergencyAlert(EmergencyRequest request);
+        Task<(Results result, object list)> LoadEmergencyAlert(FilterRequest req);
+
     }
     public class EmergencyRepository : IEmergencyRepository
     {
@@ -35,8 +38,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         {
             var result = _repo.DSpQueryMultiple($"dbo.spfn_BIMSSMEMGY0A00",new Dictionary<string, object>()
             {
-                {"parmplid", request.PL_ID },
-                {"parmpgrpid", request.PGRP_ID }
+                {"parmplid", account.PL_ID },
+                {"parmpgrpid", account.PGRP_ID }
             });
             if (result != null)
             {
@@ -49,10 +52,10 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         {
             var results = _repo.DSpQuery<dynamic>($"dbo.spfn_BIMSMEMGY0B", new Dictionary<string, object>()
                 {
-                    {"parmplid", request.PL_ID},
-                    {"parmpgrpid", request.PGRP_ID},
+                    {"parmplid", account.PL_ID},
+                    {"parmpgrpid", account.PGRP_ID},
                     {"parmemgytypid", request.EmergencyId},
-                    {"parmusrid", request.UserId},
+                    {"parmusrid", account.USR_ID},
                     {"parmsndrno", request.SenderMobileno},
                     {"parmmsgtxt", request.EmergencyMessage},
                     {"parmlat", request.latitude},
@@ -70,6 +73,21 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     return (Results.Null, null);
             }
             //return (Results.Null, null, null, null);
+            return (Results.Null, null);
+        }
+
+        public async Task<(Results result, object list)> LoadEmergencyAlert(FilterRequest req)
+        {
+            var result = _repo.DSpQueryMultiple($"dbo.spfn_BIMSEMGY0B04", new Dictionary<string, object>()
+            {
+                {"parmplid",account.PL_ID },
+                {"parmpgrpid",account.PGRP_ID },
+                {"parmusrid",account.USR_ID },
+                {"parmrownum",req.num_row },
+                {"parmsrch",req.Search }
+            });
+            if (result != null)
+                return (Results.Success, STLSubscriberDto.GetAllEmergencyAlertList(result.Read<dynamic>(), req.Userid, 100));
             return (Results.Null, null);
         }
     }

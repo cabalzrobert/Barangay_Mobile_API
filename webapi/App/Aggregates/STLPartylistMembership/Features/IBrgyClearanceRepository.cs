@@ -35,7 +35,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
 
         public async Task<(Results result, string message, string brgyclrid, string cntrlno)> RequestBrgyClearanceAsync(BrgyClearance req, bool isUpdate = false)
         {
-            var results = _repo.DSpQueryMultiple($"dbo.spfn_BRGYCLR0F", new Dictionary<string, object>()
+            var results = _repo.DSpQueryMultiple($"dbo.spfn_BRGYCLR0F1", new Dictionary<string, object>()
             {
                 {"parmplid",account.PL_ID },
                 {"parmpgrpid",account.PGRP_ID },

@@ -19,11 +19,14 @@ using Microsoft.IdentityModel.Tokens;
 using webapi.App.Aggregates.Common.Dto;
 using System.Text;
 using webapi.App.RequestModel.Feature;
+using webapi.App.RequestModel.Common;
+using webapi.App.Aggregates.SubscriberAppAggregate.Common;
 
 namespace webapi.Controllers.STLPartylistDashboardContorller.Features
 {
     [Route("app/v1/stl")]
     [ApiController]
+    [ServiceFilter(typeof(SubscriberAuthenticationAttribute))]
     public class EmergencyController : ControllerBase
     {
         private readonly IConfiguration _config;
@@ -57,6 +60,17 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
                 return Ok(new { Status = "ok", Message = result.message });
             else if (result.result != Results.Null)
                 return Ok(new { Status = "error", Message = result.message });
+            return NotFound();
+        }
+
+
+        [HttpPost]
+        [Route("emergency/list")]
+        public async Task<IActionResult> EmergencyAlertList([FromBody] FilterRequest request)
+        {
+            var result = await _repo.LoadEmergencyAlert(request);
+            if (result.result == Results.Success)
+                return Ok(result.list);
             return NotFound();
         }
     }
