@@ -676,7 +676,6 @@ namespace webapi.App.Aggregates.Common.Dto
             o.ReleaseDate = data["RLS_DT"].Str() == "" ? null : DateTime.Parse(data["RLS_DT"].Str()).ToString("MM/dd/yyyy");
             o.CancelledDate = data["CNCL_DT"].Str() == "" ? null : DateTime.Parse(data["CNCL_DT"].Str()).ToString("MM/dd/yyyy");
             o.isCanceled = Int64.Parse(data["S_CNCL"].Str()) == 1 ? true : false;
-            o.RequestDate = data["RQ_DT"].Str() == "" ? null : DateTime.Parse(data["RQ_DT"].Str()).ToString("MM/dd/yyyy");
             return o;
         }
 
