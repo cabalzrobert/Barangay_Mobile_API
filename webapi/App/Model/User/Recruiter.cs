@@ -48,6 +48,7 @@ namespace webapi.App.Model.User
         public string EML_ADD;
         public string HM_ADDR;
         public string PRSNT_ADDR;
+        public string BRGY_LOGO;
         public string LOC_REG;
         public string LOC_PROV;
         public string LOC_MUN;

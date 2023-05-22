@@ -142,6 +142,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         EML_ADD = row["EML_ADD"].Str(),
                         HM_ADDR = textInfo.ToUpper(row["HM_ADDR"].Str()),
                         PRSNT_ADDR = textInfo.ToUpper(row["PRSNT_ADDR"].Str()),
+                        BRGY_LOGO = row["BRGY_LOGO"].Str(),
                         LOC_REG = row["LOC_REG"].Str(),
                         LOC_PROV = row["LOC_PROV"].Str(),
                         LOC_MUN = row["LOC_MUN"].Str(),
