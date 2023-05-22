@@ -11,6 +11,7 @@ using webapi.Commons.AutoRegister;
 using webapi.App.RequestModel.AppRecruiter;
 using webapi.App.Aggregates.Common.Dto;
 using webapi.App.RequestModel.Common;
+using webapi.App.Features.UserFeature;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -59,6 +60,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                         req.Status = "0";
                         req.ApplicationDate = DateTime.Now.ToString("MMM dd, yyyy");
                     }
+                    PostRequestDocument(results);
                     return (Results.Success, "Succesfull save");
                 }
                     
@@ -68,6 +70,13 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     return (Results.Failed, "Check your Data, Please try again!");
             }
             return (Results.Null, null);
+        }
+
+        public async Task<bool> PostRequestDocument(IDictionary<string, object> data)
+        {
+            await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/requestdocument",
+                new { type = "requestdocument-notification", content = SubscriberDto.RequestDocumentNotification(data) });
+            return true;
         }
 
         public async Task<(Results result, object lgldoctrans)> Load_OtherDocumentRequest(LegalDocument_Transaction req)

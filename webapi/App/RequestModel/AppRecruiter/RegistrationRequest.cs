@@ -117,6 +117,7 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string GovValIDNo;
         public string GovValIDURL;
         public string Img;
+        public string ImageUrl;
         public string Attachments;
         public string Search;
         public string NextFilter;

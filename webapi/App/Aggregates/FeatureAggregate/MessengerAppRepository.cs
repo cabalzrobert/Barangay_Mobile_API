@@ -86,7 +86,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 DECLARE @tblConversation table(
                     ID bigint, ChatID bigint
                     ,SenderID varchar(25), DisplayName varchar(100), ProfileImageUrl varchar(500)
-                    ,Message nvarchar(500), DateSend datetime
+                    ,Message nvarchar(max), DateSend datetime
                     ,IsFirstMessage bit
                     ,IsImage bit, IsFile bit, MediaUrl varchar(500)
                     ,IsYou bit
@@ -224,7 +224,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 DECLARE @IsFirstMessage bit = '0';
                 --
                 DECLARE @Fullname varchar(150), @DisplayName varchar(150), @ProfileImageUrl varchar(500);
-                (SELECT TOP(1) @DisplayName=NCK_NM, @ProfileImageUrl=IMG_URL, @Fullname=FLL_NM
+                (SELECT TOP(1) /*@DisplayName=NCK_NM*/ @DisplayName=FLL_NM, @ProfileImageUrl=IMG_URL, @Fullname=FLL_NM
                 FROM dbo.STLBDB a with(nolock) 
                 WHERE CONCAT(a.PL_ID, a.ACT_ID)=@SenderID) ORDER BY a.PL_ID, a.USR_ID;
                 IF(ISNULL(@DisplayName,'')='') SET @DisplayName=@Fullname;

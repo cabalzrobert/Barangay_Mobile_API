@@ -12,6 +12,7 @@ using webapi.App.RequestModel.AppRecruiter;
 using webapi.App.Aggregates.Common.Dto;
 using webapi.App.RequestModel.Feature;
 using webapi.App.RequestModel.Common;
+using webapi.App.Features.UserFeature;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -19,7 +20,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     public interface IEmergencyRepository
     {
         Task<(Results result, object list)> LoadEmergencyType(EmergencyRequest request);
-        Task<(Results result, string message)> SendEmergencyAlert(EmergencyRequest request);
+        Task<(Results result, string message, object obj)> SendEmergencyAlert(EmergencyRequest request);
         Task<(Results result, object list)> LoadEmergencyAlert(FilterRequest req);
 
     }
@@ -48,7 +49,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             return (Results.Null, null);
         }
 
-        public async Task<(Results result, string message)> SendEmergencyAlert(EmergencyRequest request)
+        public async Task<(Results result, string message, object obj)> SendEmergencyAlert(EmergencyRequest request)
         {
             var results = _repo.DSpQuery<dynamic>($"dbo.spfn_BIMSMEMGY0B", new Dictionary<string, object>()
                 {
@@ -66,14 +67,18 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 var row = ((IDictionary<string, object>)results);
                 string ResultCode = row["RESULT"].Str();
                 if (ResultCode == "1")
-                    return (Results.Success, "Successfully Send");
+                {
+                    await PostEmergencyAlert(results);
+                    return (Results.Success, "Successfully Send", results);
+                }
+                    
                 else if (ResultCode == "0")
-                    return (Results.Failed, "Already exist");
+                    return (Results.Failed, "Already exist", null);
                 else if (ResultCode == "2")
-                    return (Results.Null, null);
+                    return (Results.Null, null, null);
             }
             //return (Results.Null, null, null, null);
-            return (Results.Null, null);
+            return (Results.Null, null, null);
         }
 
         public async Task<(Results result, object list)> LoadEmergencyAlert(FilterRequest req)
@@ -89,6 +94,13 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             if (result != null)
                 return (Results.Success, STLSubscriberDto.GetAllEmergencyAlertList(result.Read<dynamic>(), req.Userid, 100));
             return (Results.Null, null);
+        }
+
+        public async Task<bool> PostEmergencyAlert(IDictionary<string, object> data)
+        {
+            await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/emergencyalert",
+                new { type = "emergencyalert-notification", content = SubscriberDto.EmergencyAlertNotification(data) });
+            return true;
         }
     }
 }

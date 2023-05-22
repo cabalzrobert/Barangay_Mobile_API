@@ -11,6 +11,7 @@ using webapi.Commons.AutoRegister;
 using webapi.App.RequestModel.AppRecruiter;
 using webapi.App.Aggregates.Common.Dto;
 using webapi.App.RequestModel.Common;
+using webapi.App.Features.UserFeature;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -58,12 +59,20 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                         req.ApplicationDate = DateTime.Now.ToString("MMM dd, yyyy");
                         req.Requestor = req.RequestorNM;
                     }
+                    PostRequestBarangayClearance(results);
                     return (Results.Success, "Clearance succesfully save!", req.ClearanceNo, req.ControlNo);
                 }
                 else if (ResultCode == "0")
                     return (Results.Failed, "Check your Data, Please try again!", null, null);
             }
             return (Results.Null, null, null, null);
+        }
+
+        public async Task<bool> PostRequestBarangayClearance(IDictionary<string, object> data)
+        {
+            await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/requestdocument",
+                new { type = "requestdocument-notification", content = SubscriberDto.RequestDocumentNotification(data) });
+            return true;
         }
 
         public async Task<(Results result, object bryclrid)> Load_BrgyClearance(BrgyClearance req)

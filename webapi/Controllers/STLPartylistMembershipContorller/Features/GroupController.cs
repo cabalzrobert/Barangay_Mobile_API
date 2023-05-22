@@ -35,5 +35,17 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
                 return Ok(new { Status = "error", siteleader = result.ldr });
             return NotFound();
         }
+
+        [HttpPost]
+        [Route("religion")]
+        public async Task<IActionResult> Relgion([FromBody] FilterRequest req)
+        {
+            var result = await _repo.LoadReligion(req);
+            if (result.result == Results.Success)
+                return Ok(new { Status = "ok", Religion = result.rel });
+            else if (result.result != Results.Null)
+                return Ok(new { Status = "error", Religion = result.rel });
+            return NotFound();
+        }
     }
 }

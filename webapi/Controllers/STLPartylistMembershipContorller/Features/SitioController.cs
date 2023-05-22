@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using webapi.App.Aggregates.Common.Dto;
 using System.Text;
+using webapi.App.RequestModel.Common;
 
 namespace webapi.Controllers.STLPartylistDashboardContorller.Features
 {

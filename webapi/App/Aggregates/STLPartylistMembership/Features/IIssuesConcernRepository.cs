@@ -25,6 +25,7 @@ using System.Net;
 using System.Net.Mail;
 using webapi.App.RequestModel.Common;
 using webapi.App.Aggregates.Common.Dto;
+using webapi.App.Features.UserFeature;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -97,18 +98,26 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                             }).ReadSingleOrDefault();
                             if (result1 != null)
                             {
-                                var row1 = ((IDictionary<string, object>)result1);
+                                var row1 = ((IDictionary<string, object>)result1); 
                                 request.TransactionNo = row1["TRN_NO"].Str();
                                 request.IssuedDate = row1["RGS_TRN_TS"].Str();
                                 request.STAT = "Open";
                                 request.SitioName = row["SIT_NM"].Str();
+                                await PostIssuesandConcern(result1);
                             }
                         }
                         return resAsync;
                     }
                 }
             }
+
             return (Results.Failed, "Support account not set, please contact to nearest office."); //branch
+        }
+        public async Task<bool> PostIssuesandConcern(IDictionary<string, object> data)
+        {
+            await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/issuesandconern",
+                new { type = "issuesandconcern-notification", content = SubscriberDto.IssuesandConcerntNotification(data) });
+            return true;
         }
         private async Task<(Results result, String message)> PrepareSendingToGmail(ReportAProblemRequest request, String gUser, String gPass)
         {

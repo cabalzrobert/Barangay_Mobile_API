@@ -661,6 +661,26 @@ namespace webapi.App.Aggregates.Common.Dto
             return o;
         }
 
+        public static IEnumerable<dynamic> GetReligionList(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetReligion_List(data);
+            return items;
+        }
+        public static IEnumerable<dynamic> GetReligion_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_Religion_List(e));
+        }
+        public static IDictionary<string, object> Get_Religion_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            o.num_row = data["Num_row"].Str();
+            o.Religion = data["Religion"].Str();
+            o.ReligionName = data["ReligionName"].Str();
+            return o;
+        }
+
         public static IEnumerable<dynamic> GetRequstCedula_List(IEnumerable<dynamic> data, bool fullinfo = true)
         {
             if (data == null) return null;

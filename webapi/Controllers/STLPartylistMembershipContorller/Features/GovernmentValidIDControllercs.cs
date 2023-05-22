@@ -75,6 +75,12 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
                 return (Results.Null, null);
             if (!request.GovValIDURL.IsEmpty())
                 return (Results.Success, null);
+            if (!request.ImageUrl.IsEmpty())
+            {
+                request.GovValIDURL = request.ImageUrl;
+                return (Results.Success, null);
+            }
+                
             if (request.Img.IsEmpty())
                 return (Results.Failed, "Please select an image.");
             byte[] bytes = Convert.FromBase64String(request.Img.Str());

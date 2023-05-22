@@ -25,6 +25,7 @@ using System.Net;
 using System.Net.Mail;
 using webapi.App.RequestModel.Common;
 using webapi.App.Aggregates.Common.Dto;
+using webapi.App.Features.UserFeature;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -79,6 +80,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     {
                         req.CaseNo = row["BRGY_CASE_NO"].Str();
                     }
+                    PostComplaint(results);
                     return (Results.Success, "Complaint Successfully Save");
                 }
                 else if (ResultCode == "2")
@@ -87,6 +89,13 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     return (Results.Failed, "Check your Data, Please try again!");
             }
             return (Results.Success, null);
+        }
+
+        public async Task<bool> PostComplaint(IDictionary<string, object> data)
+        {
+            await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/complaint",
+                new { type = "complaint-notification", content = SubscriberDto.ComplaintNotification(data) });
+            return true;
         }
 
         public async Task<(Results result, object blotter)> LoadComplaint(ComplaintBlotter req)

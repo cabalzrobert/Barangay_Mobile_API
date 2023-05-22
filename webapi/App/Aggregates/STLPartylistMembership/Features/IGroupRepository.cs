@@ -17,7 +17,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     [Service.ITransient(typeof(GroupRepository))]
     public interface IGroupRepository
     {
-        Task<(Results result, object ldr)> SiteLeader(Group grp); 
+        Task<(Results result, object ldr)> SiteLeader(Group grp);
+        Task<(Results result, object rel)> LoadReligion(FilterRequest req);
     }
     public class GroupRepository : IGroupRepository
     {
@@ -39,6 +40,22 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             });
             if (result != null)
                 return (Results.Success, STLSubscriberDto.GetGroupList(result.Read<dynamic>()));
+            return (Results.Null, null);
+        }
+
+        public async Task<(Results result, object rel)> LoadReligion(FilterRequest req)
+        {
+            var result = _repo.DSpQueryMultiple($"dbo.spfn_BIMSSREL0A", new Dictionary<string, object>()
+            {
+                {"parmplid", account.PL_ID},
+                {"parmpgrpid",account.PGRP_ID },
+                {"parmrownum",(req.num_row == null) ? "0" : req.num_row },
+                {"parmsearch",req.Search}
+            });
+            if (result != null)
+            {
+                return (Results.Success, STLSubscriberDto.GetReligionList(result.Read<dynamic>()));
+            }
             return (Results.Null, null);
         }
 
