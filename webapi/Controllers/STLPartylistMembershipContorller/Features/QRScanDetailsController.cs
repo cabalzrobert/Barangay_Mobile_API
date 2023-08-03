@@ -40,9 +40,9 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         }
         [HttpPost]
         [Route("qrscan/detail")]
-        public async Task<IActionResult> GetScannedDetails(string scanId)
+        public async Task<IActionResult> GetScannedDetails([FromBody] scanDetails details)
         {
-            var reporesult = await _repo.getQRScannedDetails(scanId);
+            var reporesult = await _repo.getQRScannedDetails(details.USER_ID);
             if (reporesult.result == Results.Success)
                 return Ok(new { Status = "ok", Message = reporesult.message, Content=reporesult.data });
             else if (reporesult.result == Results.Failed)
@@ -122,5 +122,10 @@ namespace webapi.Controllers.STLPartylistMembership.Features
             );
             return new { Token = new JwtSecurityTokenHandler().WriteToken(token), ExpirationDate = token.ValidTo, };
         }
+    }
+
+    public class scanDetails
+    {
+        public string USER_ID;
     }
 }
