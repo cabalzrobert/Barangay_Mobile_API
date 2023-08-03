@@ -93,7 +93,8 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
             var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
             if (json["status"].Str() != "error")
             {
-                request.GovValIDURL = json["url"].Str();
+                //request.GovValIDURL = json["url"].Str();
+                request.GovValIDURL = (json["url"].Str()).Replace(_config["Portforwarding:LOCAL"].Str(), _config["Portforwarding:URL"].Str());
                 return (Results.Success, null);
             }
             return (Results.Null, "Make sure selected image is invalid");

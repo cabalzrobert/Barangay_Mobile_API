@@ -435,10 +435,15 @@ namespace webapi.App.Aggregates.FeatureAggregate
             }else if(IsPersonal){
                 //string strReceiver=
                 var conversation = _repo.DQueryMultiple($@"
-                    SELECT TOP(1) a.CHT_ID ID, a.CHT_CD ChatKey, a.S_PRSNL IsPersonal, a.S_GRP IsGroup, a.S_PBLC IsPublic, a.S_ALLW_INVT IsAllowInvatiation
-                        , b.MMBR_ID MemberID, S_ADMN IsAdmin, b.DSPLY_NM DisplayName, b.FLL_NM Fullname, b.PROF_IMG_URL ProfileImageUrl
+                    SELECT TOP(1) c.PL_ID, c.PGRP_ID, a.CHT_ID ID, a.CHT_CD ChatKey, a.S_PRSNL IsPersonal, a.S_GRP IsGroup, a.S_PBLC IsPublic, a.S_ALLW_INVT IsAllowInvatiation
+                        , b.MMBR_ID MemberID, S_ADMN IsAdmin
+                        --, b.DSPLY_NM DisplayName
+                        , c.FLL_NM DisplayName
+                        , c.FLL_NM Fullname, c.MOB_NO MobileNumber
+                        , b.PROF_IMG_URL ProfileImageUrl
                     FROM dbo.STL0BA a with(nolock)
                     INNER JOIN dbo.STL0BB b with(nolock) ON a.CHT_ID=b.CHT_ID 
+					inner join STLBDB c with(nolock) on (b.MMBR_ID = CONCAT(c.PL_ID, c.USR_ID))
                     WHERE a.CHT_CD=@ChatKey
                     AND (a.S_PRSNL=1 AND b.MMBR_ID=@MemberID);
                 ", new Dictionary<string, object>(){

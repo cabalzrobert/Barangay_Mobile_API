@@ -906,6 +906,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.PurposeID = data["PURP_ID"].Str();
             o.PurposeNM = data["PURP_NM"].Str();
             o.ProfilePicture = data["PRF_PIC"].Str();
+            o.URLDoc = data["URL_DOCPATH"].Str();
 
             o.ORNumber = textInfo.ToUpper(textInfo.ToLower(data["OR_NO"].Str()));
             //o.AmountPaid = Convert.ToDecimal(string.Format("{0:#.0}", data["AMOUNT_PAID"].Str()));
@@ -1116,6 +1117,8 @@ namespace webapi.App.Aggregates.Common.Dto
             o.ContactDetails = data["CON_DET"].Str();
             o.Address = data["EST_ADR"].Str();
             o.EmailAddress = data["EMAIL_ADR"].Str();
+            o.CompanyLogo = (data["LOGO"].Str()).Replace("www.", "");
+            o.EstablishmentLocation = data["URL_LINKED"].Str();
             return o;
         }
 

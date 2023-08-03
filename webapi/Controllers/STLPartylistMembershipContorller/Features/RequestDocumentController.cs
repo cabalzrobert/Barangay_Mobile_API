@@ -198,7 +198,8 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
                 var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                 if (json["status"].Str() != "error")
                 {
-                    string url = json["url"].Str();
+                    //string url = json["url"].Str();
+                    string url = (json["url"].Str()).Replace(_config["Portforwarding:LOCAL"].Str(), _config["Portforwarding:URL"].Str());
                     sb.Append($"<item LNK_URL=\"{ url }\" />");
                     request.Attachments[i] = url;
                 }

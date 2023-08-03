@@ -30,12 +30,13 @@ namespace webapi.App.Aggregates.Common
             o.UserID = data["USR_ID"].Str();
             o.AccountName = data["FLL_NM"].Str();
             o.ProfileImageUrl = data["IMG_URL"].Str();
+            o.MobileNo = data["MOB_NO"].Str();
             o.EmergencyID = data["EMGY_ID"].Str();
             o.EmergencyTypeID = data["EMGY_TYP_ID"].Str();
             o.EmergencyTypeNM = data["EMERGENCY_TYPE"].Str();
             o.GeoLocationLat = data["GEO_LOC_LAT"].Str();
             o.GeoLocationLong = data["GEO_LOC_LONG"].Str();
-            o.DateReceived = data["RGS_TRN_TS"].Str();
+            o.DateReceived = Convert.ToDateTime(data["RGS_TRN_TS"].Str()).ToString("MMM dd, yyyy");
             o.Count_Request = data["CNT_REQUEST"].Str();
             return o;
         }
@@ -45,7 +46,7 @@ namespace webapi.App.Aggregates.Common
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
             o.RequestDocument = data["RequestDocument"].Str();
             o.Doc_ID = data["DOC_ID"].Str();
-            o.ID = data["ID"].Str();
+            o.ClearanceNo = data["ID"].Str();
             o.PL_ID = data["PL_ID"].Str();
             o.PGRP_ID = data["PGRP_ID"].Str();
             o.UserID = data["USR_ID"].Str();
@@ -54,6 +55,8 @@ namespace webapi.App.Aggregates.Common
             o.ProfileImageUrl = data["IMG_URL"].Str();
             o.MobileNo = data["MOB_NO"].Str();
             o.ControlNo = data["CNTRL_NO"].Str();
+            o.ClearanceType = data["CERTTYP_ID"].Str();
+            o.Requested_Date = data["Requested_Date"].Str();
 
             return o;
         }
@@ -174,21 +177,37 @@ namespace webapi.App.Aggregates.Common
         public static IDictionary<string, object> IssuesandConcerntNotification(IDictionary<string, object> data)
         {
             dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            //3
             o.PL_ID = data["PL_ID"].Str();
             o.PGRP_ID = data["PGRP_ID"].Str();
-            o.UserID = data["USR_ID"].Str();
-            o.AccountName = data["FLL_NM"].Str();
-            o.MobileNo = data["MOB_NO"].Str();
+            o.Userid = data["USR_ID"].Str();
+
+            //10
+            o.Firstname = textInfo.ToTitleCase(data["FRST_NM"].Str());
+            o.Lastname = textInfo.ToTitleCase(data["LST_NM"].Str());
+            o.Middlename = textInfo.ToTitleCase(data["MDL_NM"].Str());
+            o.AccountName = textInfo.ToTitleCase(data["FLL_NM"].Str());
+            o.MobileNumber = data["MOB_NO"].Str();
             o.ProfileImageUrl = data["IMG_URL"].Str();
+            o.Sitio = data["LOC_SIT"].Str();
+            o.SitioName = textInfo.ToTitleCase(data["SIT_NM"].Str());
+            o.GeoLocationLat = data["GEO_LOC_LAT"].Str();
+            o.GeoLocationLong = data["GEO_LOC_LONG"].Str();
+            //10
             o.TransactionNo = data["TRN_NO"].Str();
             o.TicketNo = data["TCKT_NO"].Str();
             o.Subject = data["SBJCT"].Str();
             o.Body = data["BODY"].Str();
-            o.Sitio_ID = data["LOC_SIT"].Str();
-            o.Sitio_Name = data["SIT_NM"].Str();
-            o.GeoLocationLat = data["GEO_LOC_LAT"].Str();
-            o.GeoLocationLong = data["GEO_LOC_LONG"].Str();
-            o.DateReceived = data["RGS_TRN_TS"].Str();
+            o.Status = data["STAT"].Str();
+            o.StatusName = data["STAT_NM"].Str();
+            o.CorrectiveAction = data["COR_ACTION"].Str();
+            o.DateReceived = (data["RGS_TRN_TS"].Str() == "") ? "" : Convert.ToDateTime(data["RGS_TRN_TS"].Str()).ToString("MMM, dd, yyyy");
+            o.ProcessDate = (data["PRCS_TRN_TS"].Str() == "") ? "" : Convert.ToDateTime(data["PRCS_TRN_TS"].Str()).ToString("MMM dd, yyyy");
+            o.ActionDate = (data["FXD_TRN_TS"].Str() == "") ? "" : Convert.ToDateTime(data["FXD_TRN_TS"].Str()).ToString("MMM, dd, yyyy");
+            //2
+            o.TotalAttachment = (data["TTL_ATTCHMNT"].Str() == "0") ? "" : data["TTL_ATTCHMNT"].Str();
+            o.Attachment = (data["ATTCHMNT"].Str() == "0") ? "" : data["ATTCHMNT"].Str();
             return o;
         }
 

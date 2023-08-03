@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using webapi.App.Aggregates.STLPartylistMembership.Features;
 using System;
 using webapi.App.RequestModel.Common;
+using Microsoft.Extensions.Configuration;
 
 namespace webapi.Controllers.STLPartylistMembershipContorller.Features
 {
@@ -20,6 +21,7 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
     [ServiceFilter(typeof(SubscriberAuthenticationAttribute))]
     public class BlotterController:ControllerBase
     {
+        private readonly IConfiguration _config;
         private readonly IBlotterRepository _supRepo;
         public BlotterController(IBlotterRepository supRepo)
         {
@@ -121,7 +123,8 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
                     var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(res);
                     if (json["status"].Str() != "error")
                     {
-                        string url = json["url"].Str();
+                        //string url = json["url"].Str();
+                        string url = (json["url"].Str()).Replace(_config["Portforwarding:LOCAL"].Str(), _config["Portforwarding:URL"].Str());
                         sb.Append($"<item CASENO_URL=\"{ url }\" />");
                         request.Attachments[i] = url;
                     }

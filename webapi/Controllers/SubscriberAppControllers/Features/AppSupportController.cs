@@ -10,6 +10,7 @@ using webapi.App.RequestModel.Feature;
 using webapi.App.Features.UserFeature;
 using Comm.Commons.Extensions;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace webapi.Controllers.SubscriberAppControllers.Features
 {
@@ -18,6 +19,7 @@ namespace webapi.Controllers.SubscriberAppControllers.Features
     [ServiceFilter(typeof(SubscriberAuthenticationAttribute))]
     public class AppSupportController : ControllerBase
     {
+        private readonly IConfiguration _config;
         private readonly IAppSupportRepository _supRepo;
         public AppSupportController(IAppSupportRepository supRepo){
             _supRepo = supRepo;
@@ -64,7 +66,8 @@ namespace webapi.Controllers.SubscriberAppControllers.Features
 
                 var json = JsonConvert.DeserializeObject<Dictionary<string,object>>(res);
                 if(json["status"].Str()!="error"){
-                    string url = json["url"].Str();
+                    //string url = json["url"].Str();
+                    string url = (json["url"].Str()).Replace(_config["Portforwarding:LOCAL"].Str(), _config["Portforwarding:URL"].Str());
                     sb.Append($"<item LNK_URL=\"{ url }\" />");
                     request.Attachments[i] = url;
                 }
