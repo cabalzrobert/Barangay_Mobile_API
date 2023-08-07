@@ -39,7 +39,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             if (results != null)
             {
                 var row = ((IDictionary<string, object>)results.ReadFirstOrDefault());
-                if (row["RESULT"].Str() == "1")
+                if (row != null)
                     return (Results.Success, null, new
                     {
                         USR_ID = row["USR_ID"].Str(),
