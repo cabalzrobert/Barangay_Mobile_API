@@ -91,6 +91,9 @@ namespace webapi.App.Model.User
         public bool SRGS_VTR;
         public bool SPERM_RES;
 
+        public string FRNT_ID;
+        public string BCK_ID;
+
         public class Person
         {
             public string Firstname;
