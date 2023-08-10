@@ -353,4 +353,15 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string num_row;
     }
 
+    public class LocationInfo
+    {
+        public string Region;
+        public string Province;
+        public string Municipality;
+        public string Barangay;
+        public string Sitio;
+        public string Search;
+        public string num_row;
+    }
+
 }

@@ -86,6 +86,43 @@ namespace webapi.Controllers.STLPartylistMembership.Features
             return NotFound();
         }
 
+        [HttpPost]
+        [Route("location/reg")]
+        public async Task<IActionResult> Task0d([FromBody] LocationInfo req)
+        {
+            var reporesult = await _repo.RegionList(req);
+            if (reporesult.result == Results.Success)
+                return Ok(reporesult.reglist);
+            return NotFound();
+        }
+        [HttpPost]
+        [Route("location/prov")]
+        public async Task<IActionResult> Task0e([FromBody] LocationInfo req)
+        {
+            var reporesult = await _repo.ProvinceList(req);
+            if (reporesult.result == Results.Success)
+                return Ok(reporesult.provlist);
+            return NotFound();
+        }
+        [HttpPost]
+        [Route("location/mun")]
+        public async Task<IActionResult> Task0f([FromBody] LocationInfo req)
+        {
+            var reporesult = await _repo.MunicipalityList(req);
+            if (reporesult.result == Results.Success)
+                return Ok(reporesult.munlist);
+            return NotFound();
+        }
+        [HttpPost]
+        [Route("location/brgy")]
+        public async Task<IActionResult> Task0g([FromBody] LocationInfo req)
+        {
+            var reporesult = await _repo.BarangayList(req);
+            if (reporesult.result == Results.Success)
+                return Ok(reporesult.brgylist);
+            return NotFound();
+        }
+
         //[HttpPost]
         //[Route("brgyoperator")]
         //public async Task<IActionResult> Task0d([FromBody] FilterRequest req)

@@ -188,8 +188,8 @@ namespace webapi.App.Aggregates.Common.Dto
             o.Userid = data["USR_ID"].Str();
             o.RankNo = data["RNK_NO"].Str();
             o.Committee = data["CMTE"].Str();
-            o.TermStart = Convert.ToDateTime(data["EF_DATE"].Str()).ToString("MMM dd, yyyy");
-            o.TermEnd = Convert.ToDateTime(data["EOT_DATE"].Str()).ToString("MMM dd, yyyy");
+            o.TermStart = (data["EF_DATE"].Str().IsEmpty()) ? "" : Convert.ToDateTime(data["EF_DATE"].Str()).ToString("MMM dd, yyyy");
+            o.TermEnd = (data["EOT_DATE"].Str().IsEmpty()) ? "" : Convert.ToDateTime(data["EOT_DATE"].Str()).ToString("MMM dd, yyyy");
             o.ImageUrl = data["IMG_URL"].Str();
             o.SignatureURL = data["SIGNATUREID"].Str();
             //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());

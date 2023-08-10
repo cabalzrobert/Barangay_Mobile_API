@@ -21,6 +21,11 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         Task<(Results result, String message)> MembershipAsync(ResidentsInfo membership, bool isUpdate = false);
 
         Task<(Results result, String message)> UpdateMembershipAsync(ResidentsInfo membership);
+
+        Task<(Results result, object reglist)> RegionList(LocationInfo req);
+        Task<(Results result, object provlist)> ProvinceList(LocationInfo req);
+        Task<(Results result, object munlist)> MunicipalityList(LocationInfo req);
+        Task<(Results result, object brgylist)> BarangayList(LocationInfo req);
         //Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req);
     }
     public class STLMembershipRepository : ISTLMembershipRepository
@@ -33,6 +38,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             //_identity = identity;
             _repo = repo;
         }
+
 
 
         //public async Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req)
@@ -142,6 +148,55 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     return (Results.Failed, "Username already exist");
             }
             //return (Results.Null, null, null, null);
+            return (Results.Null, null);
+        }
+
+
+
+        public async Task<(Results result, object reglist)> RegionList(LocationInfo req)
+        {
+            var result = _repo.DSpQuery<dynamic>($"spfn_BIMSREG", new Dictionary<string, object>()
+            {
+                {"parmsearch",req.Search }
+            });
+            if (result != null)
+                return (Results.Success, result);
+            return (Results.Null, null);
+        }
+        public async Task<(Results result, object provlist)> ProvinceList(LocationInfo req)
+        {
+            var result = _repo.DSpQuery<dynamic>($"spfn_BIMSPROV", new Dictionary<string, object>()
+            {
+                {"parmreg", req.Region },
+                {"parmsearch",req.Search }
+            });
+            if (result != null)
+                return (Results.Success, result);
+            return (Results.Null, null);
+        }
+        public async Task<(Results result, object munlist)> MunicipalityList(LocationInfo req)
+        {
+            var result = _repo.DSpQuery<dynamic>($"spfn_BIMSMUN", new Dictionary<string, object>()
+            {
+                {"parmreg", req.Region },
+                {"parmprov", req.Province },
+                {"parmsearch",req.Search }
+            });
+            if (result != null)
+                return (Results.Success, result);
+            return (Results.Null, null);
+        }
+        public async Task<(Results result, object brgylist)> BarangayList(LocationInfo req)
+        {
+            var result = _repo.DSpQuery<dynamic>($"spfn_BIMSBRGY0A", new Dictionary<string, object>()
+            {
+                {"parmreg", req.Region },
+                {"parmprov", req.Province },
+                {"parmmun", req.Municipality },
+                {"parmsearch",req.Search }
+            });
+            if (result != null)
+                return (Results.Success, result);
             return (Results.Null, null);
         }
 
