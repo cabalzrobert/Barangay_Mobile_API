@@ -11,6 +11,7 @@ using webapi.App.Model.User;
 using webapi.Commons.AutoRegister;
 using webapi.App.Aggregates.Common.Dto;
 using webapi.App.RequestModel.Common;
+using Org.BouncyCastle.Ocsp;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -55,8 +56,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 {"parmseqnumber", req.SEQ_NO},
                 {"parmcompany", req.Company},
                 {"parmaddress", req.CompanyAddress},
-                {"parmrenderedfrom", Convert.ToDateTime(req.RenderedFrom).ToString("MMM dd, yyyy")},
-                {"parmrenderedto", (req.RenderedTo.IsEmpty()) ? "Present" : Convert.ToDateTime(req.RenderedTo).ToString("MMM dd, yyyy")}
+                {"parmrenderedfrom", string.IsNullOrEmpty(req.RenderedFrom)?null:Convert.ToDateTime(req.RenderedFrom).ToString("MMM dd, yyyy")},
+                {"parmrenderedto", string.IsNullOrEmpty(req.RenderedTo)?null:Convert.ToDateTime(req.RenderedTo).ToString("MMM dd, yyyy")}
             }).FirstOrDefault();
             if (result != null)
             {
