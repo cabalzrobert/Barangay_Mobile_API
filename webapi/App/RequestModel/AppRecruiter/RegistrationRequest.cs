@@ -355,6 +355,7 @@ namespace webapi.App.RequestModel.AppRecruiter
 
     public class LocationInfo
     {
+        public string ID;
         public string Region;
         public string Province;
         public string Municipality;

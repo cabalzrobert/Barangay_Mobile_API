@@ -57,7 +57,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                         RLGN = row["DESCRIPTION"].Str()
                     });
             }
-            return (Results.Failed, "ID Not Found", null);
+            return (Results.Failed, "Invalid QR Code", null);
         }
 
         private int getAge(string bday)

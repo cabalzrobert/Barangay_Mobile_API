@@ -27,7 +27,7 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
 
         [HttpPost]
         [Route("reqbrgyclearance")]
-        public async Task<IActionResult> Task01([FromBody] BrgyClearance request)
+        public async Task<IActionResult> Task01([FromBody] FilterRequest request)
         {
             var result = await _repo.Load_BrgyClearance(request);
             if (result.result == Results.Success)

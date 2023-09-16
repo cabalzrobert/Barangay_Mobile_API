@@ -19,7 +19,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     public interface IBrgyClearanceRepository
     {
         Task<(Results result, String message, String brgyclrid, String cntrlno)> RequestBrgyClearanceAsync(BrgyClearance req, bool isUpdate = false);
-        Task<(Results result, object bryclrid)> Load_BrgyClearance(BrgyClearance req);
+        Task<(Results result, object bryclrid)> Load_BrgyClearance(FilterRequest req);
         Task<(Results result, object certtyp)> LoadCertificateType();
         Task<(Results result, object purpose)> LoadPurpose();
     }
@@ -75,15 +75,16 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             return true;
         }
 
-        public async Task<(Results result, object bryclrid)> Load_BrgyClearance(BrgyClearance req)
+        public async Task<(Results result, object bryclrid)> Load_BrgyClearance(FilterRequest req)
         {
             var results = _repo.DSpQueryMultiple($"dbo.spfn_BRGYCLR0G", new Dictionary<string, object>()
             {
                 {"parmplid", account.PL_ID},
                 {"parmpgrpid",account.PGRP_ID },
-                {"parmuserid",req.UserID },
+                {"parmuserid",req.Userid },
                 {"parmrownum",req.num_row },
                 {"parmrequeststatus", req.Status },
+                {"parmsearch", req.Search },
             });
             if (results != null)
                 return (Results.Success, STLSubscriberDto.GetBrygClearanceList(results.Read<dynamic>(), account.USR_ID, 100));

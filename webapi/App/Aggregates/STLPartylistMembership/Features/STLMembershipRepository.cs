@@ -20,6 +20,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         ////Task<(Results result, String message, STLSignInRequest signin, STLAccount account)> MembershipAsync(STLMembership membership, bool isUpdate = false);
         Task<(Results result, String message)> MembershipAsync(ResidentsInfo membership, bool isUpdate = false);
 
+        Task<(Results result, String message)> GetBarangaySubscriberAsync(ResidentsInfo membership);
         Task<(Results result, String message)> UpdateMembershipAsync(ResidentsInfo membership);
 
         Task<(Results result, object reglist)> RegionList(LocationInfo req);
@@ -167,7 +168,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         {
             var result = _repo.DSpQuery<dynamic>($"spfn_BIMSPROV", new Dictionary<string, object>()
             {
-                {"parmreg", req.Region },
+                {"parmcode", req.ID },
                 {"parmsearch",req.Search }
             });
             if (result != null)
@@ -178,8 +179,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         {
             var result = _repo.DSpQuery<dynamic>($"spfn_BIMSMUN", new Dictionary<string, object>()
             {
-                {"parmreg", req.Region },
-                {"parmprov", req.Province },
+                {"parmcode", req.ID },
                 {"parmsearch",req.Search }
             });
             if (result != null)
@@ -190,9 +190,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         {
             var result = _repo.DSpQuery<dynamic>($"spfn_BIMSBRGY0A", new Dictionary<string, object>()
             {
-                {"parmreg", req.Region },
-                {"parmprov", req.Province },
-                {"parmmun", req.Municipality },
+                {"parmcode", req.ID },
                 {"parmsearch",req.Search }
             });
             if (result != null)
@@ -319,6 +317,31 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     return (Results.Failed, "You are already Member of this Group");
                 else if (ResultCode == "5")
                     return (Results.Failed, "Username already exist");
+            }
+            return (Results.Null, null);
+        }
+
+        public async Task<(Results result, string message)> GetBarangaySubscriberAsync(ResidentsInfo membership)
+        {
+            var results = _repo.DSpQueryMultiple("dbo.spfn_BDBDAB0A", new Dictionary<string, object>()
+            {
+                {"parmreg", membership.Region },
+                {"parmprov", membership.Province },
+                {"parmmun", membership.Municipality },
+                {"parmbrgy", membership.Barangay }
+            }).ReadSingleOrDefault();
+            if (results != null)
+            {
+                var row = ((IDictionary<string, object>)results);
+                string ResultCode = row["RESULT"].Str();
+                if(ResultCode == "1")
+                {
+                    membership.PL_ID = row["PL_ID"].Str();
+                    membership.PGRP_ID = row["PGRP_ID"].Str();
+                    return (Results.Success, "Barangay Subscribe was activated.");
+                }
+                else if(ResultCode == "0")
+                    return (Results.Failed, "Barangay Subscribe was not activated.");
             }
             return (Results.Null, null);
         }

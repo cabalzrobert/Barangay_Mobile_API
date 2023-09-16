@@ -20,6 +20,7 @@ using webapi.App.Aggregates.Common.Dto;
 using System.Text;
 using webapi.App.Aggregates.SubscriberAppAggregate.Common;
 using webapi.App.RequestModel.Common;
+using Microsoft.VisualBasic;
 
 namespace webapi.Controllers.STLPartylistMembership.Features
 {
@@ -42,12 +43,39 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         [Route("qrscan/detail")]
         public async Task<IActionResult> GetScannedDetails([FromBody] scanDetails details)
         {
-            var reporesult = await _repo.getQRScannedDetails(details.USER_ID);
+            if (!IsBase64(details.USER_ID))
+                return Ok(new { Status = "error", Message = "Invalid QR Code" });
+            byte[] byteData = Convert.FromBase64String(details.USER_ID);
+            string strData = Encoding.UTF8.GetString(byteData);
+
+            string[] strqrcode = strData.Split('\n');
+            string[] arridno = (strqrcode[0].Str()).Split(':');
+            string stridno = arridno[1].Str();
+            var reporesult = await _repo.getQRScannedDetails(stridno);
             if (reporesult.result == Results.Success)
                 return Ok(new { Status = "ok", Message = reporesult.message, Content=reporesult.data });
             else if (reporesult.result == Results.Failed)
                 return Ok(new { Status = "error", Message = reporesult.message });
             return NotFound();
+        }
+        public static bool IsBase64(string base64String)
+        {
+            try
+            {
+                if (!base64String.Equals(Convert.ToBase64String(Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(Convert.FromBase64String(base64String)))), StringComparison.InvariantCultureIgnoreCase) & !System.Text.RegularExpressions.Regex.IsMatch(base64String, @"^[a-zA-Z0-9\+/]*={0,2}$"))
+                {
+                    return false;
+                }
+                else if ((base64String.Length % 4) != 0 || string.IsNullOrEmpty(base64String) || base64String.Length % 4 != 0 || base64String.Contains(" ") || base64String.Contains(Constants.vbTab) || base64String.Contains(Constants.vbCr) || base64String.Contains(Constants.vbLf))
+                {
+                    return false;
+                }
+                else return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         //[HttpPost]

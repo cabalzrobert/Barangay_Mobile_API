@@ -69,6 +69,11 @@ namespace webapi.Controllers.STLPartylistMembership
         public async Task<IActionResult> Task0a([FromBody] STLSignInRequest request)
         {
             if (request == null) return NotFound();
+
+            var res = await _repo.GetSubscriberID(request);
+            if(res.result !=Results.Success)
+                return Ok(new { Status = "error", Message = res.message });
+
             if (!(request.DeviceID.Str().Equals("web") || request.DeviceName.Str().Equals("web")))
             {
                 request.ApkVersion = request.ApkVersion.Replace(" ", "_");
@@ -90,7 +95,7 @@ namespace webapi.Controllers.STLPartylistMembership
                 return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group });
             }
             else if (result.result == SignInResults.ChangePassword)
-                return Ok(new { Status = "ok", Mode = "change-password", Message = result.message, });
+                return Ok(new { Status = "ok", Mode = "change-password", Message = result.message, PLID = request.plid, PGRPID = request.groupid, PSNCD = request.psncd });
             else if (result.result == SignInResults.Failed)
                 return Ok(new { Status = "error", Message = result.message });
             return NotFound();

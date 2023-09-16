@@ -37,6 +37,7 @@ namespace webapi.App.RequestModel.AppRecruiter
     {
         public string Username;
         public string Password;
+        public string Password1;
         public string plid;
         public string groupid;
         public string psncd;

@@ -478,10 +478,19 @@ namespace webapi.App.Aggregates.Common.Dto
             o.FLL_NM = textInfo.ToTitleCase(textInfo.ToLower(data["FLL_NM"].Str()));
             return o;
         }
-        public static IEnumerable<dynamic> GetSitioList(IEnumerable<dynamic> data, bool fullinfo = true)
+        public static IEnumerable<dynamic> GetSitioList(IEnumerable<dynamic> data, string brgyid = "", int limit = 100, bool fullinfo = true)
         {
             if (data == null) return null;
             var items = GetSitioLists(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.brgyid = brgyid;
+            }
             return items;
         }
         public static IEnumerable<dynamic> GetSitioLists(IEnumerable<dynamic> data, bool fullinfo = true)
@@ -492,6 +501,7 @@ namespace webapi.App.Aggregates.Common.Dto
         public static IDictionary<string, object> GetSitio_List(IDictionary<string, object> data, bool fullinfo = true)
         {
             dynamic o = Dynamic.Object;
+            o.num_row = data["Num_Row"].Str();
             o.SIT_ID = data["SIT_ID"].Str();
             o.SIT_NM = data["SIT_NM"].Str();
             return o;
@@ -850,6 +860,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.VerifiedBy = textInfo.ToTitleCase(textInfo.ToLower(data["VERIFIEDBY"].Str()));
             o.CertifiedBy = textInfo.ToTitleCase(textInfo.ToLower(data["CERTIFIEDBY"].Str()));
             o.StatusRequest = data["STAT_REQ"].Str();
+            o.URLDoc = data["URL_DOCPATH"].Str();
 
             o.Release = (data["RELEASED"].Str()=="") ? false : Convert.ToBoolean(data["RELEASED"].Str());
             o.MosValidity = (data["MOS_VAL"].Str() == "") ? 0 : Convert.ToInt32(data["MOS_VAL"].Str());
@@ -892,6 +903,8 @@ namespace webapi.App.Aggregates.Common.Dto
         {
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
             dynamic o = Dynamic.Object;
+            string strnum_row = data["Num_Row"].Str();
+            o.num_row = data["Num_Row"].Str();
             o.PL_ID = data["PL_ID"].Str();
             o.PGRP_ID = data["PGRP_ID"].Str();
             o.ClearanceNo = data["BRGYCLR_ID"].Str();
@@ -1283,6 +1296,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.MobileNo = data["MOB_NO"].Str();
             o.Birthdate = (data["BRT_DT"].Str() == "") ? "" : Convert.ToDateTime(data["BRT_DT"].Str()).ToString("MMM dd, yyyy");
             o.ProfilePicture = data["PRF_PIC"].Str();
+            o.URLDoc = data["URL_DOCPATH"].Str();
 
             o.ORNumber = textInfo.ToUpper(textInfo.ToLower(data["OR_NO"].Str()));
             o.AmountPaid = (data["AMOUNT_PAID"].Str() == "") ? Convert.ToDouble(0).ToString("n2") : Convert.ToDouble(data["AMOUNT_PAID"].Str()).ToString("n2");

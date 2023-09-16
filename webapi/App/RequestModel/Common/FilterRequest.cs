@@ -34,8 +34,9 @@ namespace webapi.App.RequestModel.Common
         public string Province;
         public string Municipality;
         public string Barangay;
+        public string Sitio;
 
-        
+
 
         public DateTime? TransactionDt;
         public DateTime? FromDt;

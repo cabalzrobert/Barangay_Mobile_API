@@ -24,8 +24,9 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
     {
         private readonly IConfiguration _config;
         private readonly IIssuesConcernRepository _supRepo;
-        public IssuesConcernController(IIssuesConcernRepository supRepo)
+        public IssuesConcernController(IIssuesConcernRepository supRepo, IConfiguration config)
         {
+            _config = config;
             _supRepo = supRepo;
         }
         [HttpPost]

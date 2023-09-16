@@ -17,7 +17,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     [Service.ITransient(typeof(SitioRepository))]
     public interface ISitioRepository
     {
-        Task<(Results result, object sit)> LoadSitio(Sitio sit);
+        Task<(Results result, object sit)> LoadSitio(FilterRequest sit);
         Task<(Results result, object brgy)> LoadBarangay(Barangay brgy);
     }
     public class SitioRepository : ISitioRepository
@@ -31,15 +31,17 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             _repo = repo;
         }
 
-        public async Task<(Results result, object sit)> LoadSitio(Sitio sit)
+        public async Task<(Results result, object sit)> LoadSitio(FilterRequest sit)
         {
             var result = _repo.DSpQueryMultiple($"dbo.spfn_LLL0C",new Dictionary<string, object>()
             {
-                {"parmbrgy",sit.ID }
+                {"parmbrgy",sit.ID },
+                {"parmrownum", sit.num_row },
+                {"parmsearch", sit.Search }
             });
             if (result != null)
             {
-                return (Results.Success, STLSubscriberDto.GetSitioList(result.Read<dynamic>()));
+                return (Results.Success, STLSubscriberDto.GetSitioList(result.Read<dynamic>(), sit.ID));
             }
             return (Results.Null, null);
         }

@@ -50,8 +50,11 @@ namespace webapi.App.Model.User
         public string PRSNT_ADDR;
         public string BRGY_LOGO;
         public string LOC_REG;
+        public string LOC_REG_NM;
         public string LOC_PROV;
+        public string LOC_PROV_NM;
         public string LOC_MUN;
+        public string LOC_MUN_NM;
         public string LOC_BRGY;
         public string LOC_BRGY_NM;
         public string LOC_SIT;

@@ -23,8 +23,9 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
     {
         private readonly IConfiguration _config;
         private readonly IBlotterRepository _supRepo;
-        public BlotterController(IBlotterRepository supRepo)
+        public BlotterController(IBlotterRepository supRepo, IConfiguration config)
         {
+            _config = config;
             _supRepo = supRepo;
         }
         [HttpPost]

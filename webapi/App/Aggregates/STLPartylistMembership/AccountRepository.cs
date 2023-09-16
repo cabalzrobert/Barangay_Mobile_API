@@ -21,6 +21,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
         Task<(SignInResults result, String message, STLAccount account)> STLSignInAsync(STLSignInRequest request);
         Task<(Results result, String message)> RequiredChangePassword(RequiredChangePassword request);
         Task<(object PartyList, object Group)> MemberGroup(STLAccount account);
+        Task<(Results result, String message)> GetSubscriberID(STLSignInRequest request);
     }
     public class AccountRepository : IAccountRepository
     {
@@ -46,6 +47,28 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                 return (SignInResults.ApkUpdate, "New version available", result["APP_VRSN"].Str(), result["APK_UPDT_URL"].Str());
             }
             return (SignInResults.Null, null, null, null);
+        }
+
+        public async Task<(Results result, string message)> GetSubscriberID(STLSignInRequest request)
+        {
+            var results = _repo.DSpQueryMultiple("dbo.spfn_BDA0B", new Dictionary<string, object>(){
+                {"parmusername",request.Username },
+            }).ReadSingleOrDefault();
+            if (results != null)
+            {
+                var row = ((IDictionary<string, object>)results);
+                string ResultCode = row["RESULT"].Str();
+                if (ResultCode == "1")
+                {
+                    request.plid = row["PL_ID"].Str();
+                    request.groupid = row["PGRP_ID"].Str();
+                    request.psncd = row["PGRP_ID"].Str();
+                    return (Results.Success, "Barangay Subscribe was activated.");
+                }
+                else if (ResultCode == "0")
+                    return (Results.Failed, "Barangay Subscribe was not activated.");
+            }
+            return (Results.Null, null);
         }
 
         public async Task<(object PartyList, object Group)> MemberGroup(STLAccount account)
@@ -103,7 +126,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
             var results = _repo.DSpQueryMultiple("dbo.spfn_AABOL", new Dictionary<string, object>()
             {
                 {"parmusrename",request.Username },
-                {"parmpassword",request.Password },
+                {"parmpassword",request.Password1 },
                 //{"parmplid",request.plid },
                 //{"parmpgrpid",request.groupid },
                 //{"parmpsncd",request.psncd }
@@ -144,8 +167,11 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         PRSNT_ADDR = textInfo.ToUpper(row["PRSNT_ADDR"].Str()),
                         BRGY_LOGO = row["BRGY_LOGO"].Str(),
                         LOC_REG = row["LOC_REG"].Str(),
+                        LOC_REG_NM = row["LOC_REG_NM"].Str(),
                         LOC_PROV = row["LOC_PROV"].Str(),
+                        LOC_PROV_NM = row["LOC_PROV_NM"].Str(),
                         LOC_MUN = row["LOC_MUN"].Str(),
+                        LOC_MUN_NM = row["LOC_MUN_NM"].Str(),
                         LOC_BRGY = row["LOC_BRGY"].Str(),
                         LOC_BRGY_NM = textInfo.ToUpper(row["LOC_BRGY_NM"].Str()),
                         LOC_SIT = row["LOC_SIT"].Str(),

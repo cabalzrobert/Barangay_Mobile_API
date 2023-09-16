@@ -37,7 +37,7 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
         }
         [HttpPost]
         [Route("sitio")]
-        public async Task<IActionResult> Sitio([FromBody] Sitio sit)
+        public async Task<IActionResult> Sitio([FromBody] FilterRequest sit)
         {
             var result = await _repo.LoadSitio(sit);
             if (result.result == Results.Success)

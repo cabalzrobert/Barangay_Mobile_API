@@ -84,6 +84,7 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/notify", this.receivedSubscriberNotification);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/balance", this.receivedSubscriberBalance);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/livestream", this.receivedSubscriberBalance);
+            stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/virtualid", this.receivedSubscriberVirtualID);
 
             //if(!account.GeneralCoordinatorID.IsEmpty())
             //    stack.subscribe($"/{account.CompanyID}/{account.BranchID}/{account.GeneralCoordinatorID}/downline", this.receivedSubscriberNotification);
@@ -120,6 +121,10 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
         //
         private void receivedSubscriberChat(Ultralight.StompMessage message){
             stomp("/chat", message.Body);
+        }
+        private void receivedSubscriberVirtualID(Ultralight.StompMessage message)
+        {
+            stomp("/virtualid", message.Body);
         }
         private void receivedSubscriberNotification(Ultralight.StompMessage message){
             stomp("/notify", message.Body);

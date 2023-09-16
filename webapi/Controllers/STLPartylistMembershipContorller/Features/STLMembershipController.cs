@@ -42,11 +42,20 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         [Route("membership/new")]
         public async Task<IActionResult> Task0b([FromBody] ResidentsInfo request)
         {
+            /*
+             1.) Get the PL_ID and PGRP_ID for the registration
+             */
+            var valsubsrciber = await _repo.GetBarangaySubscriberAsync(request);
+            if(valsubsrciber.result !=Results.Success)
+                return Ok(new { Status = "error", Message = valsubsrciber.message });
+
+            //Process to Upload ProfilePicture
             var valresult = await validity(request);
             if (valresult.result == Results.Failed)
                 return Ok(new { Status = "error", Message = valresult.message });
             if (valresult.result != Results.Success)
                 return NotFound();
+            //Process to save Membership Account
             var reporesult = await _repo.MembershipAsync(request);
 
             if (reporesult.result == Results.Success)
@@ -92,7 +101,9 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         {
             var reporesult = await _repo.RegionList(req);
             if (reporesult.result == Results.Success)
-                return Ok(reporesult.reglist);
+                return Ok(new { Status = "ok", region = reporesult.reglist });
+            else if (reporesult.result != Results.Null)
+                return Ok(new { Status = "error", region = reporesult.reglist });
             return NotFound();
         }
         [HttpPost]
@@ -101,7 +112,9 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         {
             var reporesult = await _repo.ProvinceList(req);
             if (reporesult.result == Results.Success)
-                return Ok(reporesult.provlist);
+                return Ok(new { Status = "ok", province = reporesult.provlist });
+            else if (reporesult.result != Results.Null)
+                return Ok(new { Status = "error", province = reporesult.provlist });
             return NotFound();
         }
         [HttpPost]
@@ -110,7 +123,9 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         {
             var reporesult = await _repo.MunicipalityList(req);
             if (reporesult.result == Results.Success)
-                return Ok(reporesult.munlist);
+                return Ok(new { Status = "ok", municpality = reporesult.munlist });
+            else if (reporesult.result != Results.Null)
+                return Ok(new { Status = "error", municpality = reporesult.munlist });
             return NotFound();
         }
         [HttpPost]
@@ -119,7 +134,9 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         {
             var reporesult = await _repo.BarangayList(req);
             if (reporesult.result == Results.Success)
-                return Ok(reporesult.brgylist);
+                return Ok(new { Status = "ok", brgy = reporesult.brgylist });
+            else if (reporesult.result != Results.Null)
+                return Ok(new { Status = "error", brgy = reporesult.brgylist });
             return NotFound();
         }
 
