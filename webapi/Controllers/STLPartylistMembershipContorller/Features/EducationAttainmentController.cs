@@ -26,9 +26,9 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
         }
         [HttpPost]
         [Route("loadattainment")]
-        public async Task<IActionResult> Task0a([FromBody] EducAttainment grp)
+        public async Task<IActionResult> Task0a()
         {
-            var result = await _repo.LoadEducationalAttainment(grp);
+            var result = await _repo.LoadEducationalAttainment();
             if (result.result == Results.Success)
                 return Ok(result.educattainment );
             else if (result.result != Results.Null)

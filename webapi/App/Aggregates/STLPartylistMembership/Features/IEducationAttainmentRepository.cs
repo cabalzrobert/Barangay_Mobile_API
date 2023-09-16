@@ -17,7 +17,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     [Service.ITransient(typeof(EducationAttainmentRepository))]
     public interface IEducationAttainmentRepository
     {
-        Task<(Results result, object educattainment)> LoadEducationalAttainment(EducAttainment req);
+        Task<(Results result, object educattainment)> LoadEducationalAttainment();
         Task<(Results result, String message)> EducationalAttainmentAsync(EducAttainment req);
     }
     public class EducationAttainmentRepository:IEducationAttainmentRepository
@@ -31,7 +31,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             _repo = repo;
         }
 
-        public async Task<(Results result, object educattainment)> LoadEducationalAttainment(EducAttainment req)
+        public async Task<(Results result, object educattainment)> LoadEducationalAttainment()
         {
             var results = _repo.DSpQueryMultiple($"dbo.spfn_BDBEDUCAT0B", new Dictionary<string, object>()
             {
