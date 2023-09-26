@@ -73,5 +73,17 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
                 return Ok(result.list);
             return NotFound();
         }
+
+        [HttpPost]
+        [Route("emergency/update")]
+        public async Task<IActionResult> UpdateEmergencyAlert([FromBody] EmergencyRequest request)
+        {
+            var result = await _repo.SendEmergencyAlert(request);
+            if (result.result == Results.Success)
+                return Ok(new { Status = "ok", Message = result.message });
+            else if (result.result != Results.Null)
+                return Ok(new { Status = "error", Message = result.message });
+            return NotFound();
+        }
     }
 }

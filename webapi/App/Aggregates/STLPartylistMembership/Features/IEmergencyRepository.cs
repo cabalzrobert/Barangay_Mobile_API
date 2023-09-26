@@ -60,7 +60,9 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     {"parmsndrno", request.SenderMobileno},
                     {"parmmsgtxt", request.EmergencyMessage},
                     {"parmlat", request.latitude},
-                    {"parmlong", request.longitude}
+                    {"parmlong", request.longitude},
+                    {"parmrptmsg", request.ReportMessage},
+                    {"parmincdtimg", request.IncidentImage}
                 }).FirstOrDefault();
             if (results != null)
             {
