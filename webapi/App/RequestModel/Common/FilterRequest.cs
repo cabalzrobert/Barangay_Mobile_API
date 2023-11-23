@@ -35,6 +35,9 @@ namespace webapi.App.RequestModel.Common
         public string Municipality;
         public string Barangay;
         public string Sitio;
+        public string PhoneBook;
+        public string Invitationlist;
+        public string Category;
 
 
 

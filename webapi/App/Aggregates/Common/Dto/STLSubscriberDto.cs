@@ -584,6 +584,42 @@ namespace webapi.App.Aggregates.Common.Dto
             return o;
         }
 
+
+        public static IEnumerable<dynamic> GetAllContactList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllContact_List(data);
+            var count = items.Count();
+            //if (count >= limit)
+            //{
+            //    var o = items.Last();
+            //    var filter = (o.NextFilter = Dynamic.Object);
+            //    items = items.Take(count - 1).Concat(new[] { o });
+            //    filter.NextFilter = o.num_row;
+            //    filter.Userid = userid;
+            //}
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllContact_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllContact_List(e));
+        }
+        public static IDictionary<string, object> Get_AllContact_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.displayFirstCharacter = data["displayFirstCharacter"].Str();
+            o.RequestID = data["USR_ID"].Str();
+            o.displayName = data["displayName"].Str();
+            o.MobileNumbers = data["MobileNumbers"].Str();
+            o.isBIMSS = Convert.ToBoolean(data["isBIMSS"]);
+            o.ImageUrl = data["IMG_URL"].Str();
+
+            
+            return o;
+        }
+
         public static IEnumerable<dynamic> GetAttachementReqDocAttmList(IEnumerable<dynamic> data, int limit = 100, bool fullinfo = true)
         {
             if (data == null) return null;
@@ -915,7 +951,8 @@ namespace webapi.App.Aggregates.Common.Dto
             o.MobileNo = data["MOB_NO"].Str();
             o.Birthdate = (data["BRT_DT"].Str() == "") ? "" : Convert.ToDateTime(data["BRT_DT"].Str()).ToString("MMM dd, yyyy");
             o.TypeofClearance = data["CERTTYP_ID"].Str();
-            o.TypeofClearanceNM = textInfo.ToUpper(textInfo.ToLower(data["CERTTYP_NM"].Str()));
+            //o.TypeofClearanceNM = textInfo.ToUpper(textInfo.ToLower(data["CERTTYP_NM"].Str()));
+            o.TypeofClearanceNM = data["CERTTYP_NM"].Str();
             o.PurposeID = data["PURP_ID"].Str();
             o.PurposeNM = data["PURP_NM"].Str();
             o.ProfilePicture = data["PRF_PIC"].Str();
@@ -947,6 +984,51 @@ namespace webapi.App.Aggregates.Common.Dto
             o.CancelledDate = (data["DATECANCELLED"].Str() == "") ? "" : Convert.ToDateTime(data["DATECANCELLED"].Str()).ToString("MMM dd, yyyy");
             o.AppointmentDate = (data["APP_DATE"].Str() == "") ? "" : Convert.ToDateTime(data["APP_DATE"].Str()).ToString("MMM dd, yyyy");
             o.ApplicationDate = (data["RGS_TRN_TS"].Str() == "") ? "" : Convert.ToDateTime(data["RGS_TRN_TS"].Str()).ToString("MMM dd, yyyy");
+            return o;
+        }
+
+
+        public static IEnumerable<dynamic> GetNewsList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetNews_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetNews_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_News_List(e));
+        }
+        public static IDictionary<string, object> Get_News_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            string strnum_row = data["Num_Row"].Str();
+            //string s1 = (data["category"].Str()).Substring(0, 1);
+            //string s2 = textInfo.ToLower(data["category"].Str()).Remove(0, 1);
+            o.num_row = data["Num_Row"].Str();
+            o.category = textInfo.ToTitleCase(data["category"].Str());
+            o.source_name = data["name"].Str();
+            o.source_id = data["id"].Str();
+            o.author = data["author"].Str();
+            o.title = data["title"].Str();
+            o.description = data["description"].Str();
+            o.url = data["url"].Str();
+            o.urlToImage = data["urlToImage"].Str();
+            o.publishedAt = data["publishedAt"].Str();
+            o.publishedDate = (data["publishedDate"].Str() == "") ? "" : Convert.ToDateTime(data["publishedDate"].Str()).ToString("MMM dd, yyyy");
+            o.news_content = data["news_content"].Str();
+
             return o;
         }
 
@@ -1378,6 +1460,127 @@ namespace webapi.App.Aggregates.Common.Dto
             o.RequestID = data["USR_ID"].Str();
             o.Operator = textInfo.ToUpper(textInfo.ToLower(data["FLL_NM"].Str()));
             o.MobileNumber = data["MOB_NO"].Str();
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetAllAcctSearchList(IEnumerable<dynamic> data, int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllAcctSearch_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                //filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllAcctSearch_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllAcctSearch_List(e));
+        }
+        public static IDictionary<string, object> Get_AllAcctSearch_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.PLID = data["PL_ID"].Str();
+            o.PGRPID = data["PGRP_ID"].Str();
+            o.AcctType = data["ACT_TYP"].Str();
+            o.RequestID = data["USR_ID"].Str();
+            o.AccountName = textInfo.ToUpper(textInfo.ToLower(data["FLL_NM"].Str()));
+            o.MobileNumber = data["MOB_NO"].Str();
+            o.ProfileImageUrl = data["IMG_URL"].Str();
+            //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());
+            return o;
+        }
+
+
+        public static IEnumerable<dynamic> GetAllChatSenderList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllChatSender_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllChatSender_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllChatSender_List(e));
+        }
+        public static IDictionary<string, object> Get_AllChatSender_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.ChatID = data["ID"].Str();
+            o.ChatKey = data["CHT_CD"].Str();
+            o.IsPersonal = data["S_PRSNL"].Str();
+            o.IsGroup = data["S_GRP"].Str();
+            o.IsPublic = data["S_PBLC"].Str();
+            o.IsAllowInvatiation = data["S_ALLW_INVT"].Str();
+            o.RequestID = data["MMBR_ID"].Str();
+            o.DisplayName =  data["FLL_NM"].Str();
+            o.ProfileImageUrl = data["IMG_URL"].Str();
+            o.MobileNo = data["MOB_NO"].Str();
+            o.DateSend = data["RGS_TRN_TS"].Str();
+            o.Message = data["MSG"].Str();
+            o.IsYou = Convert.ToBoolean(data["IsYou"]);
+            o.Count = (data["Unread"].Str() == "0") ? "" : data["Unread"].Str();
+
+            //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetAllBlockedAccountList(IEnumerable<dynamic> data, string userid = "", int limit = 30, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllBlockedAccount_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllBlockedAccount_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllBlockedAccount_List(e));
+        }
+        public static IDictionary<string, object> Get_AllBlockedAccount_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.ChatID = data["CHT_ID"].Str();
+            o.ChatKey = data["CHT_CD"].Str();
+            o.RequestID = data["USR_ID"].Str();
+            o.DisplayName = data["FLL_NM"].Str();
+            o.ProfileImageUrl = data["IMG_URL"].Str();
+            o.MobileNo = data["MOB_NO"].Str();
+
+            //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());
             return o;
         }
 

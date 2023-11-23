@@ -24,28 +24,79 @@ using webapi.App.Features.UserFeature;
 
 namespace webapi.App.Aggregates.FeatureAggregate
 {
-    [Service.ITransient(typeof(MessengerAppRepository))] 
+    [Service.ITransient(typeof(MessengerAppRepository))]
     public interface IMessengerAppRepository
     {
         Task<(Results result, object item)> RequestPublicChatAsync();
         Task<(Results result, object item)> RequestPersonalChatAsync(String RequestID);
+        Task<(Results result, object item)> RequestPersonalChatAsync1(String RequestID);
         Task<(Results result, object item)> GetPreviousChatAsync(String ChatKey, int StartWith);
         Task<(Results result, object item)> SendMessageAsync(String ChatKey, MessengerAppRequest request);
         Task<(Results result, object items)> GetPreviousChatsAsync(String LastChatTimestamp);
         Task<(Results result, object items)> GetRecentChatsAsync();
+        Task<(Results result, int UnReadMessage, String message)> ChatMessageReadAsync(MessengerAppRequest req);
+        Task<(Results result, object item)> ChatMessageIsReadAsync(MessengerAppRequest req);
     }
 
     public class MessengerAppRepository : IMessengerAppRepository
     {
         private readonly ISubscriber _identity;
         private readonly IRepository _repo;
-        public STLAccount account { get{ return _identity.AccountIdentity(); } }  
-        public MessengerAppRepository(ISubscriber identity, IRepository repo){
-            _identity = identity; 
-            _repo = repo; 
+        public STLAccount account { get { return _identity.AccountIdentity(); } }
+        public MessengerAppRepository(ISubscriber identity, IRepository repo)
+        {
+            _identity = identity;
+            _repo = repo;
         }
 
-        public async Task<(Results result, object item)> RequestPublicChatAsync(){
+        public async Task<(Results result, int UnReadMessage, string message)> ChatMessageReadAsync(MessengerAppRequest req)
+        {
+            var result = _repo.DSpQuery<dynamic>($"spfn_0BC0003", new Dictionary<string, object>()
+            {
+                {"parmchatid", req.ChatID},
+                {"parmsenderid", $"{req.PL_ID}{req.RequestID}"}
+            }).FirstOrDefault();
+            if (result != null)
+            {
+                var row = ((IDictionary<string, object>)result);
+                var ResultCode = row["RESULT"].Str();
+                if (ResultCode == "1")
+                {
+                    return (Results.Success, Convert.ToInt32(row["UnreadCount"].Str()), "Successfully send!");
+                }
+                else if (ResultCode == "2")
+                    return (Results.Failed,  0, "License was not valid");
+            }
+            return (Results.Null, 0, null);
+        }
+        public async Task<(Results result, object item)> ChatMessageIsReadAsync(MessengerAppRequest req)
+        {
+            String ReceiverID = $"{ account.PL_ID }{ req.RequestID }";
+            
+
+            var result = _repo.DSpQueryMultiple($"dbo.spfn_0BC0002", new Dictionary<string, object>()
+                {
+                    {"parmuserid",ReceiverID },
+                    {"parmjson",req.MessageList }
+                });
+            if (result != null)
+            {
+                var chat = result.Read<dynamic>();
+                await notifyChatIsRead(req.ChatKey, chat, req.RequestID);
+                return (Results.Success, chat);
+            }
+                //return (Results.Success, result);
+
+            return (Results.Null, null);
+        }
+        private async Task<bool> notifyChatIsRead(String ChatKey, IEnumerable<dynamic> list, string MemberID = "")
+        {
+            //await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/{MemberID}/chatmessageread", new { type = "chatmessage", content = list, MemberID = MemberID });
+            await Pusher.PushAsync($"/{account.PL_ID}/{MemberID}/chatmessageread", new { type = "chatmessage", content = list, MemberID = MemberID });
+            return true;
+        }
+        public async Task<(Results result, object item)> RequestPublicChatAsync()
+        {
             String SenderID = $"{ account.PL_ID }{ account.ACT_ID }";
             String ChatKey = Cipher.MD5Hash($"{ account.PL_ID }|{ account.PGRP_ID }");
             var results = _repo.DQueryMultiple($@"
@@ -114,9 +165,11 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 { "SenderID", SenderID },
                 { "CompanyID", account.PL_ID },
             });
-            if(results != null){
+            if (results != null)
+            {
                 var chat = results.ReadSingle<dynamic>();
-                if(chat!=null){
+                if (chat != null)
+                {
                     chat.Messages = results.Read<dynamic>();
                     return (Results.Success, chat);
                 }
@@ -125,7 +178,8 @@ namespace webapi.App.Aggregates.FeatureAggregate
         }
 
 
-        public async Task<(Results result, object item)> RequestPersonalChatAsync(String RequestID){
+        public async Task<(Results result, object item)> RequestPersonalChatAsync(String RequestID)
+        {
             String SenderID = $"{ account.PL_ID }{ account.ACT_ID }";
             String ReceiverID = $"{ account.PL_ID }{ RequestID }";
             string strChatKey = DateTime.Now.ToTimeMillisecond().ToString("X");
@@ -165,9 +219,9 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 INNER JOIN dbo.STL0BB b with(nolock)ON a.CHT_ID=b.CHT_ID 
                 WHERE a.CHT_ID=@ChatID AND ((a.S_PRSNL=1 AND b.MMBR_ID<>@SenderID) OR (a.S_GRP=1 AND b.MMBR_ID='0000000000000000'));
                 --
-                SELECT DISTINCT TOP(15) a.CHT_ID ChatID, a.CHT_CONV_ID ID, a.SNDR_ID SenderID, a.DSPLY_NM DisplayName, a.PROF_IMG_URL ProfileImageUrl
+                SELECT DISTINCT TOP(30) a.CHT_ID ChatID, a.CHT_CONV_ID ID, a.SNDR_ID SenderID, a.DSPLY_NM DisplayName, a.PROF_IMG_URL ProfileImageUrl
                     , a.MSG Message, a.SND_TS DateSend, a.S_FRST_MSG IsFirstMessage
-                    , a.S_IMG IsImage, a.S_FIL IsFile, a.MDIA_URL MediaUrl, CAST(IIF(@SenderID=a.SNDR_ID,1,0) as bit) IsYou
+                    , a.S_IMG IsImage, a.S_FIL IsFile, a.MDIA_URL MediaUrl, CAST(IIF(@SenderID=a.SNDR_ID,1,0) as bit) IsYou, ISNULL(a.isRead, 0) isRead
                 FROM dbo.STL0BC a with(nolock)
                 INNER JOIN dbo.STL0BB b with(nolock) ON (a.CHT_ID=b.CHT_ID AND a.SNDR_ID=b.MMBR_ID)
                 WHERE (a.SND_TS<@CurrentDT)
@@ -179,9 +233,43 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 { "SenderID", SenderID },
                 { "ReceiverID", ReceiverID },
             });
-            if(results != null){
+            if (results != null)
+            {
                 var chat = results.ReadSingle<dynamic>();
-                if(chat!=null){
+                if (chat != null)
+                {
+                    chat.Messages = results.Read<dynamic>();
+                    return (Results.Success, chat);
+                }
+            }
+            return (Results.Null, null);
+        }
+
+        public async Task<(Results result, object item)> RequestPersonalChatAsync1(String RequestID)
+        {
+            String SenderID = $"{ account.PL_ID }{ account.ACT_ID }";
+            String ReceiverID = $"{ account.PL_ID }{ RequestID }";
+            string strChatKey = DateTime.Now.ToTimeMillisecond().ToString("X");
+
+            var results = _repo.DSpQueryMultiple($"dbo.spfn_0BA0BBBDB03", new Dictionary<string, object>()
+            {
+                {"parmSenderID", SenderID },
+                {"parmReceiverID", ReceiverID },
+                {"ChatKey", strChatKey }
+             });
+
+            //var results = _repo.DQueryMultiple($"dbo.spfn_0BA0BBBDB03", new Dictionary<string, object>()
+            //{
+            //    //{ "ChatKey", DateTime.Now.ToTimeMillisecond().ToString("X") },
+            //    {"parmSenderID", SenderID },
+            //    {"parmReceiverID", ReceiverID },
+            //    {"ChatKey", strChatKey }
+            //});
+            if (results != null)
+            {
+                var chat = results.ReadSingle<dynamic>();
+                if (chat != null)
+                {
                     chat.Messages = results.Read<dynamic>();
                     return (Results.Success, chat);
                 }
@@ -190,7 +278,8 @@ namespace webapi.App.Aggregates.FeatureAggregate
         }
 
 
-        public async Task<(Results result, object item)> GetPreviousChatAsync(String ChatKey, int StartWith){
+        public async Task<(Results result, object item)> GetPreviousChatAsync(String ChatKey, int StartWith)
+        {
             String ReceiverID = $"{ account.PL_ID }{ account.ACT_ID }";
             var results = _repo.DQueryMultiple($@"
                 ;with cte as(
@@ -201,7 +290,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 )
                 SELECT DISTINCT TOP(15) b.CHT_ID ChatID, b.CHT_CONV_ID ID, b.SNDR_ID SenderID, b.DSPLY_NM DisplayName, b.PROF_IMG_URL ProfileImageUrl
 					, b.MSG Message, b.SND_TS DateSend, b.S_FRST_MSG IsFirstMessage
-                    , b.S_IMG IsImage, b.S_FIL IsFile, b.MDIA_URL MediaUrl, CAST(IIF(@ReceiverID=b.SNDR_ID,1,0) as bit) IsYou
+                    , b.S_IMG IsImage, b.S_FIL IsFile, b.MDIA_URL MediaUrl, CAST(IIF(@ReceiverID=b.SNDR_ID,1,0) as bit) IsYou, ISNULL(b.isRead, 0) isRead
                 FROM cte a with(nolock)
                 INNER JOIN dbo.STL0BC b with(nolock)ON a.CHT_ID=b.CHT_ID
                 WHERE (b.CHT_CONV_ID<@StartWith OR @StartWith=0)
@@ -211,13 +300,14 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 { "StartWith", StartWith },
                 { "ReceiverID", ReceiverID },
             });
-            if(results!=null)
+            if (results != null)
                 return (Results.Success, results.Read<dynamic>());
             return (Results.Null, null);
         }
 
 
-        public async Task<(Results result, object item)> SendMessageAsync(String ChatKey, MessengerAppRequest request){
+        public async Task<(Results result, object item)> SendMessageAsync(String ChatKey, MessengerAppRequest request)
+        {
             String SenderID = $"{ account.PL_ID }{ account.ACT_ID }";
             request.MemberID = $"{account.PL_ID}{request.MemberID}";
             var result = _repo.DQueryMultiple($@"
@@ -255,7 +345,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 BEGIN
                     SELECT '2' RESULT;
                 END;
-            ", 
+            ",
             new Dictionary<string, object>(){
                 { "ChatKey", ChatKey },
                 { "SenderID", SenderID },
@@ -264,13 +354,14 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 { "IsFile", (request.IsFile?"1":"0") },
                 { "MediaUrl", (request.IsImage||request.IsFile?request.MediaUrl:"") },
             }).ReadSingleOrDefault();
-            if(result!=null){
+            if (result != null)
+            {
                 var row = ((IDictionary<string, object>)result);
                 bool IsPublicChat = row["IsPublicChat"].To<bool>(false);
                 bool IsPersonal = row["IsPersonal"].To<bool>(false);
                 if (IsPublicChat)
                     await notifyChat(ChatKey, result);
-                else if(IsPersonal)
+                else if (IsPersonal)
                     await notifyChat(ChatKey, result, request.MemberID);
                 return (Results.Success, SetAsYou(result));
             }
@@ -279,7 +370,8 @@ namespace webapi.App.Aggregates.FeatureAggregate
 
 
 
-        public async Task<(Results result, object items)> GetPreviousChatsAsync(String LastChatTimestamp){
+        public async Task<(Results result, object items)> GetPreviousChatsAsync(String LastChatTimestamp)
+        {
             String ReceiverID = $"{ account.PL_ID }{ account.ACT_ID }";
             var results = _repo.DQueryMultiple($@"
                 DECLARE @RowCount int;
@@ -313,21 +405,24 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 { "LastChatDate", LastChatTimestamp },
                 { "ReceiverID", ReceiverID },
             });
-            if(results != null){
+            if (results != null)
+            {
                 var chats = results.Read<dynamic>();
-                if(chats.Count() != 0){
+                if (chats.Count() != 0)
+                {
                     var messages = results.Read<dynamic>();
                     Dictionary<String, dynamic> msgs = new Dictionary<String, dynamic>();
-                    foreach(dynamic message in messages)
+                    foreach (dynamic message in messages)
                         msgs[(message.ChatID as object).Str()] = message;
-                    foreach(dynamic chat in chats)
+                    foreach (dynamic chat in chats)
                         chat.Message = msgs.GetValue((chat.ID as object).Str());
                 }
                 return (Results.Success, chats);
             }
             return (Results.Null, null);
         }
-        public async Task<(Results result, object items)> GetRecentChatsAsync(){
+        public async Task<(Results result, object items)> GetRecentChatsAsync()
+        {
             String ReceiverID = $"{ account.PL_ID }{ account.ACT_ID }";
             var results = _repo.DQueryMultiple($@"
                 DECLARE @tblConversation table(
@@ -383,18 +478,21 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 { "LatestTimestamp", DateTime.Now.AddDays(-10).ToString("yyyy-MM-dd HH:mm:ss.fff") },
                 { "ReceiverID", ReceiverID },
             });
-            if(results != null){
+            if (results != null)
+            {
                 var chats = results.Read<dynamic>();
-                if(chats.Count() != 0){
+                if (chats.Count() != 0)
+                {
                     var messages = results.Read<dynamic>();
                     Dictionary<String, dynamic> msgs = new Dictionary<String, dynamic>();
-                    foreach(dynamic message in messages){
+                    foreach (dynamic message in messages)
+                    {
                         string ChatID = (message.ChatID as object).Str();
-                        if(!msgs.ContainsKey(ChatID))
-                            msgs[ChatID]= new List<dynamic>();
+                        if (!msgs.ContainsKey(ChatID))
+                            msgs[ChatID] = new List<dynamic>();
                         (msgs[ChatID] as List<dynamic>).Add(message);
                     }
-                    foreach(dynamic chat in chats)
+                    foreach (dynamic chat in chats)
                         chat.Message = msgs.GetValue((chat.ID as object).Str());
                 }
                 return (Results.Success, chats);
@@ -402,11 +500,15 @@ namespace webapi.App.Aggregates.FeatureAggregate
             return (Results.Null, null);
         }
         //
-        private object SetAsYou(IDictionary<string, object> data){
+        private object SetAsYou(IDictionary<string, object> data)
+        {
             data["IsYou"] = true;
             return data;
         }
-        private async Task<bool> notifyChat(String ChatKey, IDictionary<string, object> row, String MemberID = ""){
+
+        
+        private async Task<bool> notifyChat(String ChatKey, IDictionary<string, object> row, String MemberID = "")
+        {
             //if(row["IsPublicChat"].Str().Equals("1")) return;
             bool IsPublicChat = row["IsPublicChat"].To<bool>(false);
             bool IsPersonal = row["IsPersonal"].To<bool>(false);
@@ -419,7 +521,8 @@ namespace webapi.App.Aggregates.FeatureAggregate
             var result = ((IDictionary<string, object>)results.ReadSingleOrDefault());
             String FirebaseAuth = result["FRBS_AUTH"].Str();*/
 
-            if (IsPublicChat){
+            if (IsPublicChat)
+            {
                 var conversation = _repo.DQueryMultiple($@"
                     SELECT TOP(1) a.CHT_ID ID, a.CHT_CD ChatKey, a.S_PRSNL IsPersonal, a.S_GRP IsGroup, a.S_PBLC IsPublic, a.S_ALLW_INVT IsAllowInvatiation
                         , b.MMBR_ID MemberID, S_ADMN IsAdmin, b.DSPLY_NM DisplayName, b.FLL_NM Fullname, b.PROF_IMG_URL ProfileImageUrl
@@ -430,10 +533,14 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 ", new Dictionary<string, object>(){
                     { "ChatKey", ChatKey },
                 }).ReadSingleOrDefault();
-                conversation.Messages = new List<dynamic>(new[]{row});
-                await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/chat", new{ type = "public", content = conversation });
-            }else if(IsPersonal){
+                conversation.Messages = new List<dynamic>(new[] { row });
+                await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/chat", new { type = "public", content = conversation });
+            }
+            else if (IsPersonal)
+            {
                 //string strReceiver=
+                //account.MemberID = MemberID;
+                //MemberID = MemberID.Remove(0, 4);
                 var conversation = _repo.DQueryMultiple($@"
                     SELECT TOP(1) c.PL_ID, c.PGRP_ID, a.CHT_ID ID, a.CHT_CD ChatKey, a.S_PRSNL IsPersonal, a.S_GRP IsGroup, a.S_PBLC IsPublic, a.S_ALLW_INVT IsAllowInvatiation
                         , b.MMBR_ID MemberID, S_ADMN IsAdmin
@@ -451,7 +558,8 @@ namespace webapi.App.Aggregates.FeatureAggregate
                     { "MemberID", MemberID },
                 }).ReadSingleOrDefault();
                 conversation.Messages = new List<dynamic>(new[] { row });
-                await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/chat", new { type = "personal", content = conversation });
+                //await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/chat", new { type = "personal", content = conversation });
+                await Pusher.PushAsync($"/{account.PL_ID}/{MemberID.Remove(0,4)}/receivedchat", new { type = "personal", content = conversation });
             }
             return false;
         }

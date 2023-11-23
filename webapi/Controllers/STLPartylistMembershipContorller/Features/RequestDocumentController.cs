@@ -39,6 +39,30 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
             return NotFound();
         }
 
+        [HttpPost]
+        [Route("phonebook/contact")]
+        public async Task<IActionResult> Task011([FromBody] FilterRequest request)
+        {
+            var result = await _repo.LoadContact(request);
+            if (result.result == Results.Success)
+                return Ok(new { Status = "ok", contact = result.contact });
+            else if(result.result != Results.Null)
+                return Ok(new { Status = "error", contact = result.contact });
+            return NotFound();
+        }
+
+
+        [HttpPost]
+        [Route("bimss/sendinvite")]
+        public async Task<IActionResult> Task012([FromBody] FilterRequest request)
+        {
+            var result = await _repo.SendInvitation(request);
+            if (result.result == Results.Success)
+                return Ok(new { Status = "ok", message = result.message });
+            else if (result.result != Results.Null)
+                return Ok(new { Status = "error", message = result.message });
+            return NotFound();
+        }
 
         [HttpPost]
         [Route("doctype")]

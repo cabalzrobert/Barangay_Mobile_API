@@ -47,6 +47,16 @@ namespace webapi.Controllers.SubscriberAppControllers.Features
             return NotFound();
         }
         [HttpPost]
+        [Route("per/{RequestID}")]
+        public async Task<IActionResult> Task0b1(String RequestID)
+        {
+            if (RequestID.IsEmpty()) return NotFound();
+            var repoResult = await _appRepo.RequestPersonalChatAsync1(RequestID);
+            if (repoResult.result == Results.Success)
+                return Ok(repoResult.item);
+            return NotFound();
+        }
+        [HttpPost]
         [Route("t/{ChatKey}/{StartWith}")]
         public async Task<IActionResult> Task0c(String ChatKey, String StartWith){
             if(ChatKey.IsEmpty()) return NotFound();
@@ -93,7 +103,29 @@ namespace webapi.Controllers.SubscriberAppControllers.Features
                 return Ok(repoResult.items);
             return NotFound();
         }
-        
+
+
+        [HttpPost]
+        [Route("isread")]
+        public async Task<IActionResult> Task0g([FromBody] MessengerAppRequest req)
+        {
+            var result = await _appRepo.ChatMessageReadAsync(req);
+            if (result.result == Results.Success)
+                return Ok(new { Status = "ok", UnreadMessage = result.UnReadMessage, Message = result.message });
+            if (result.result == Results.Failed)
+                return Ok(new { Status = "error", UnreadMessage = result.UnReadMessage, Message = result.message });
+            return NotFound();
+        }
+        [HttpPost]
+        [Route("message/isread")]
+        public async Task<IActionResult> Task0h([FromBody] MessengerAppRequest req)
+        {
+            var repoResult = await _appRepo.ChatMessageIsReadAsync(req);
+            if (repoResult.result == Results.Success)
+                return Ok(repoResult.item);
+            return NotFound();
+        }
+
         public static async Task<(Results result, string message)> validity(STLAccount account, String ChatKey, MessengerAppRequest request){
             if(request == null || ChatKey.IsEmpty()) return (Results.Null, null);
             String type = request.Type.Str();

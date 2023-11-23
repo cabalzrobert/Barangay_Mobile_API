@@ -96,6 +96,7 @@ namespace webapi.App.Model.User
 
         public string FRNT_ID;
         public string BCK_ID;
+        public string MemberID;
 
         public class Person
         {

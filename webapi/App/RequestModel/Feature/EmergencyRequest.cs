@@ -11,6 +11,9 @@
         public string SenderMobileno;
         public string latitude;
         public string longitude;
-        
+        public string ReportMessage;
+        public string IncidentImage;
+
+
     }
 }

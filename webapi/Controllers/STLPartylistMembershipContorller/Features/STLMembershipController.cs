@@ -152,6 +152,18 @@ namespace webapi.Controllers.STLPartylistMembership.Features
         //    return NotFound();
         //}
 
+        [HttpPost]
+        [Route("bimss/accntlist")]
+        public async Task<IActionResult> Task0d([FromBody] FilterRequest req)
+        {
+            var result = await _repo.Load_Account_List(req);
+            if (result.result == Results.Success)
+                return Ok(new { Status = result.result, accntlist = result.accntlist });
+            else if (result.result != Results.Null)
+                return Ok(new { Status = "error", brgyoptr = result.accntlist });
+            return NotFound();
+        }
+
         private async Task<(Results result, string message)> validity(ResidentsInfo request)
         {
             if (request == null)

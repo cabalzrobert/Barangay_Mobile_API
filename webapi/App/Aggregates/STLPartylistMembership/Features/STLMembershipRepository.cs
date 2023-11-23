@@ -28,6 +28,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         Task<(Results result, object munlist)> MunicipalityList(LocationInfo req);
         Task<(Results result, object brgylist)> BarangayList(LocationInfo req);
         //Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req);
+        Task<(Results result, object accntlist)> Load_Account_List(FilterRequest req);
     }
     public class STLMembershipRepository : ISTLMembershipRepository
     {
@@ -343,6 +344,19 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 else if(ResultCode == "0")
                     return (Results.Failed, "Barangay Subscribe was not activated.");
             }
+            return (Results.Null, null);
+        }
+
+        public async Task<(Results result, object accntlist)> Load_Account_List(FilterRequest req)
+        {
+            var results = _repo.DSpQuery<dynamic>($"dbo.spfn_BDB0F", new Dictionary<string, object>()
+            {
+                {"parmsearch", req.Search},
+                {"parmusrid", req.ID },
+                {"parmrownum", req.num_row },
+            });
+            if (results != null)
+                return (Results.Success, STLSubscriberDto.GetAllAcctSearchList(results, 100));
             return (Results.Null, null);
         }
     }

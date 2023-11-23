@@ -364,5 +364,11 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string Search;
         public string num_row;
     }
+    public class BlockedUserAccount
+    {
+        public string ChatKey;
+        public string RequestID;
+        public string ChatID;
+    }
 
 }

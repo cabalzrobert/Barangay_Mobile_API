@@ -74,13 +74,20 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
         }
 
         private void Subscribes(){
+
             stack.subscribe("/test", this.msgTest);
             
             stack.subscribe($"/{account.PL_ID}/notify", this.receivedCompanyNotication);
-            stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/chat", this.receivedBranchPublicChat);
+            //stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/chat", this.receivedBranchPublicChat);
+            stack.subscribe($"/{account.PL_ID}/chat", this.receivedBranchPublicChat);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/notify", this.receivedBranchNotication);
+            //stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/chatmessageread", this.ChatMessageIsReadNotication);
+
+            stack.subscribe($"/{account.PL_ID}/{account.USR_ID}/chatmessageread", this.ChatMessageIsReadNotication);
             //stack.subscribe($"/{account.CompanyID}/{account.BranchID}/arena", this.receivedBranchArena);
-            stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/chat", this.receivedSubscriberChat);
+            //stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/chat", this.receivedSubscriberChat);
+            /*Send Message Notification*/
+            stack.subscribe($"/{account.PL_ID}/{account.USR_ID}/receivedchat", this.receivedSubscriberReceivedChat);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/notify", this.receivedSubscriberNotification);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/balance", this.receivedSubscriberBalance);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/livestream", this.receivedSubscriberBalance);
@@ -112,6 +119,10 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
         private void receivedBranchNotication(Ultralight.StompMessage message){
             stomp("/branch", message.Body);
         }
+        private void ChatMessageIsReadNotication(Ultralight.StompMessage message)
+        {
+            stomp("/chatmessageread", message.Body);
+        }
         private void receivedBranchArena(Ultralight.StompMessage message){
             stomp("/arena", message.Body);
         }
@@ -121,6 +132,10 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
         //
         private void receivedSubscriberChat(Ultralight.StompMessage message){
             stomp("/chat", message.Body);
+        }
+        private void receivedSubscriberReceivedChat(Ultralight.StompMessage message)
+        {
+            stomp("/receivedchat", message.Body);
         }
         private void receivedSubscriberVirtualID(Ultralight.StompMessage message)
         {

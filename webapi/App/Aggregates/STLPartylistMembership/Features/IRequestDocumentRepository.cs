@@ -25,6 +25,8 @@ namespace webapi.App.Aggregates.STLPartylistDashboard.Features
         Task<(Results result, String message, String reqdocid)> UpdateRequestBrgyClearanceAsync(RequestDocument request);
         Task<(Results result, String message, String reqdocid)> UpdateRequestBrgyDocumentAsync(RequestDocument request);
         Task<(Results result, object reqdoc)> LoadRequestDocument(FilterRequest request);
+        Task<(Results result, object contact)> LoadContact(FilterRequest request);
+        Task<(Results result, String  message)> SendInvitation(FilterRequest request);
         Task<(Results result, object reqdoc)> LoadIssuesConcernAttachment(RequestDocument request);
         Task<(Results result, object doctype)> LoadDocumentType();
     }
@@ -89,6 +91,20 @@ namespace webapi.App.Aggregates.STLPartylistDashboard.Features
             return (Results.Null, null);
         }
 
+        public async Task<(Results result, object contact)> LoadContact(FilterRequest request)
+        {
+            var result = _repo.DSpQueryMultiple($"dbo.spfn_PBBDB01", new Dictionary<string, object>()
+            {
+                {"parmphonebook", request.PhoneBook},
+                {"parmusrid", request.ID },
+                {"parmsearch", request.Search}
+            });
+            if (result != null)
+                return (Results.Success, STLSubscriberDto.GetAllContactList(result.Read<dynamic>(), request.Userid, 100));
+            return (Results.Null, null);
+        }
+        
+
         public async Task<(Results result, string message, String reqdocid)> UpdateRequestDocumentAsync(RequestDocument request)
         {
             var result = _repo.DSpQuery<dynamic>($"spfn_REQ_DOC0B", new Dictionary<string, object>()
@@ -127,6 +143,29 @@ namespace webapi.App.Aggregates.STLPartylistDashboard.Features
                     return (Results.Failed, "You already had request this document, Please try again", null);
             }
             return (Results.Null, null, null);
+        }
+
+        public async Task<(Results result, String message)> SendInvitation(FilterRequest request)
+        {
+            var result = _repo.DSpQuery<dynamic>($"dbo.spfn_INVCBABDB", new Dictionary<string, object>()
+            {
+                {"parmplid", account.PL_ID },
+                {"parmpgrpid", account.PGRP_ID },
+                {"parmuserid", account.USR_ID },
+                {"parminvitationlist", request.Invitationlist},
+            }).FirstOrDefault();
+            if (result != null)
+            {
+                var row = ((IDictionary<string, object>)result);
+                var ResultCode = row["RESULT"].Str();
+                if (ResultCode == "1")
+                    return (Results.Success, "Invitation Successfully Sent");
+                else if (ResultCode == "0")
+                    return (Results.Failed, "Check Details, Please try again");
+                else if (ResultCode == "2")
+                    return (Results.Failed, "You already had request this document, Please try again");
+            }
+            return (Results.Null, null);
         }
 
 
