@@ -28,7 +28,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
     public interface IMessengerAppRepository
     {
         Task<(Results result, object item)> RequestPublicChatAsync();
-        Task<(Results result, object item)> RequestPersonalChatAsync(String RequestID);
+        Task<(Results result, object item)> RequestPersonalChatAsync(String RequestID, String ConnectionId = null);
         Task<(Results result, object item)> RequestPersonalChatAsync1(String RequestID);
         Task<(Results result, object item)> GetPreviousChatAsync(String ChatKey, int StartWith);
         Task<(Results result, object item)> SendMessageAsync(String ChatKey, MessengerAppRequest request);
@@ -178,7 +178,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
         }
 
 
-        public async Task<(Results result, object item)> RequestPersonalChatAsync(String RequestID)
+        public async Task<(Results result, object item)> RequestPersonalChatAsync(String RequestID, String ConnectionId = null)
         {
             String SenderID = $"{ account.PL_ID }{ account.ACT_ID }";
             String ReceiverID = $"{ account.PL_ID }{ RequestID }";
@@ -207,10 +207,10 @@ namespace webapi.App.Aggregates.FeatureAggregate
                     INSERT INTO dbo.STL0BA(CHT_CD, S_PRSNL)
                     VALUEs(@ChatKey, 1);
                     SET @ChatID = SCOPE_IDENTITY();
-                    INSERT INTO dbo.STL0BB(CHT_ID, MMBR_ID, FLL_NM)
-                    VALUES(@ChatID, @SenderID, @SenderID);
-                    INSERT INTO dbo.STL0BB(CHT_ID, MMBR_ID, FLL_NM) 
-                    VALUES(@ChatID, @ReceiverID, @ReceiverID); 
+                    INSERT INTO dbo.STL0BB(CHT_ID, CNCTN_ID, MMBR_ID, FLL_NM)
+                    VALUES(@ChatID, @ConnectionId, @SenderID, @SenderID);
+                    INSERT INTO dbo.STL0BB(CHT_ID, CNCTN_ID, MMBR_ID, FLL_NM) 
+                    VALUES(@ChatID, @ConnectionId, @ReceiverID, @ReceiverID); 
                 END;
                 --
                 SELECT a.CHT_ID ID, a.CHT_CD ChatKey, a.S_PRSNL IsPersonal, a.S_GRP IsGroup, a.S_PBLC IsPublic, a.S_ALLW_INVT IsAllowInvatiation
@@ -232,6 +232,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 {"ChatKey", strChatKey },
                 { "SenderID", SenderID },
                 { "ReceiverID", ReceiverID },
+                { "ConnectionId", ConnectionId },
             });
             if (results != null)
             {
