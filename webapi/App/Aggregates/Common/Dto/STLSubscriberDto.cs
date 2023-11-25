@@ -1540,6 +1540,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.DateSend = data["RGS_TRN_TS"].Str();
             o.Message = data["MSG"].Str();
             o.IsYou = Convert.ToBoolean(data["IsYou"]);
+            o.IsConnected = (byte)data["IS_CNCTD"] == 0 ? false : true;
             o.Count = (data["Unread"].Str() == "0") ? "" : data["Unread"].Str();
 
             //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());
@@ -1713,6 +1714,39 @@ namespace webapi.App.Aggregates.Common.Dto
             o.NATNLTY = textInfo.ToTitleCase(data.Nationality);
             o.OCCPTN = textInfo.ToTitleCase(data.Occupation);
             o.SKLLS = textInfo.ToTitleCase(data.Skills);
+            return o;
+        }
+
+        public static IEnumerable<dynamic> ConnectionRequestParser(IEnumerable<dynamic> data, string userid = "")
+        {
+            if (data == null) return null;
+            var items = ConnectionRequestObjectParser(data);
+            return items;
+
+        }
+        public static IEnumerable<dynamic> ConnectionRequestObjectParser(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => ConnectionRequestObject(e));
+        }
+        public static IDictionary<string, object> ConnectionRequestObject(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.ConnectionRequestId = data["REQ_ID"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.REQ_TO = data["REQ_TO"].Str();
+            o.REQ_BY = data["REQ_BY"].Str();
+            o.Agenda = data["AGENDA"].Str();
+            o.REQ_DTTM = (DateTime)data["REQ_DTTM"];
+            o.IsAccepted = (byte)data["IS_ACPTD"] == 0 ? false : true;
+            o.IsDeclined = (byte)data["IS_DCLND"] == 0 ? false : true;
+            o.IsCanceled = (byte)data["IS_CNCLD"] == 0 ? false : true;
+            o.IsConnected = (byte)data["IS_CNCTD"] == 0 ? false : true;
+            o.USR_NM = data["USR_NM"].Str();
+            o.PRF_PIC = data["PRF_PIC"].Str();
+            o.MOB_NO = data["MOB_NO"].Str();
             return o;
         }
     }
