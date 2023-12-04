@@ -38,6 +38,7 @@ namespace webapi.App.RequestModel.Common
         public string PhoneBook;
         public string Invitationlist;
         public string Category;
+        public string EmergencyType;
 
 
 

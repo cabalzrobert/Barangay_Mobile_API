@@ -90,6 +90,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 {"parmplid",account.PL_ID },
                 {"parmpgrpid",account.PGRP_ID },
                 {"parmusrid",account.USR_ID },
+                {"parmemgytypid",req.EmergencyType },
                 {"parmrownum",req.num_row },
                 {"parmsrch",req.Search }
             });
