@@ -21,6 +21,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     {
         Task<(Results result, object list)> GetConnectionRequestList(int segment);
         Task<(Results result, string message, string reqid)> UpdateConnectionRequest(ConnectionRequest req);
+        Task<(Results result, string message)> SendConnectionRequestAsync(ConnectionRequest req);
     }
     public class ConnectionRequestRepository : IConnectionRequestRepository
     {
@@ -72,6 +73,32 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             }
             //return (Results.Null, null, null, null);
             return (Results.Null, null, null);
+        }
+        public async Task<(Results result, string message)> SendConnectionRequestAsync(ConnectionRequest req)
+        {
+            var results = _repo.DSpQuery<dynamic>($"dbo.spfn_ADDMOBCHTRQLST", new Dictionary<string, object>()
+                {
+                    {"parmplid", account.PL_ID},
+                    {"parmgrpid", account.PGRP_ID},
+                    {"parmreqby", req.RequestByID},
+                    {"parmreqto", req.RequestToID},
+                    {"parmagenda", req.Agenda},
+                }).FirstOrDefault();
+            if (results != null)
+            {
+                var row = ((IDictionary<string, object>)results);
+                string ResultCode = row["RESULT"].Str();
+                if (ResultCode == "1")
+                {
+                    req.ConnectionRequestId = row["REQ_ID"].Str();
+                    return (Results.Success, "Success");
+                }
+                    
+                else if (ResultCode == "0")
+                    return (Results.Failed, "Failed");
+            }
+            //return (Results.Null, null, null, null);
+            return (Results.Null, null);
         }
 
         //public async Task<(Results result, string message)> EditDeleteFamily(Family req)

@@ -58,7 +58,7 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
         {
             var result = await _repo.SendInvitation(request);
             if (result.result == Results.Success)
-                return Ok(new { Status = "ok", message = result.message });
+                return Ok(new { Status = "ok", Message = result.message });
             else if (result.result != Results.Null)
                 return Ok(new { Status = "error", message = result.message });
             return NotFound();

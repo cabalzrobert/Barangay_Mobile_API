@@ -20,7 +20,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
         Task<(SignInResults result, String message, String apkVersion, String apkUrl)> ApkUpdateCheckerAsync(STLSignInRequest request);
         Task<(SignInResults result, String message, STLAccount account)> STLSignInAsync(STLSignInRequest request);
         Task<(Results result, String message)> RequiredChangePassword(RequiredChangePassword request);
-        Task<(object PartyList, object Group)> MemberGroup(STLAccount account);
+        Task<(object PartyList, object Group, object Announcement)> MemberGroup(STLAccount account);
         Task<(Results result, String message)> GetSubscriberID(STLSignInRequest request);
     }
     public class AccountRepository : IAccountRepository
@@ -71,7 +71,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
             return (Results.Null, null);
         }
 
-        public async Task<(object PartyList, object Group)> MemberGroup(STLAccount account)
+        public async Task<(object PartyList, object Group, object Announcement)> MemberGroup(STLAccount account)
         {
             var results = _repo.DSpQueryMultiple("dbo.spfn_CBA01", new Dictionary<string, object>()
             {
@@ -83,9 +83,10 @@ namespace webapi.App.Aggregates.STLPartylistMembership
             {
                 var Group = STLSubscriberDto.GetGroup(results.ReadSingleOrDefault());
                 var PartyList = STLSubscriberDto.GetPartyList(results.ReadSingleOrDefault());
-                return (PartyList, Group);
+                var Announcement = STLSubscriberDto.GetAnnouncment(results.ReadSingleOrDefault());
+                return (PartyList, Group, Announcement);
             }
-            return (null, null);
+            return (null, null, null);
 
 
         }

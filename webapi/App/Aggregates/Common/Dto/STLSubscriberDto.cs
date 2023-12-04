@@ -22,6 +22,15 @@ namespace webapi.App.Aggregates.Common.Dto
             o.URL_STRMNG = data["URL_STRMNG"].Str();
             return o;
         }
+        public static IDictionary<string, object> GetAnnouncment(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.Title = data["NOTIF_TTL"].Str();
+            o.Description = data["NOTIF_DESC"].Str();
+            return o;
+        }
         public static IDictionary<string, object> GetGroup(IDictionary<string, object> data, bool fullinfo = true)
         {
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
@@ -614,6 +623,11 @@ namespace webapi.App.Aggregates.Common.Dto
             o.displayName = data["displayName"].Str();
             o.MobileNumbers = data["MobileNumbers"].Str();
             o.isBIMSS = Convert.ToBoolean(data["isBIMSS"]);
+            o.isConnected = Convert.ToBoolean(data["IS_CNCTD"]);
+            o.isAccepted = Convert.ToBoolean(data["IS_ACPTD"]);
+            o.isActive = Convert.ToBoolean(data["IS_ACTV"]);
+            o.isDeclined = Convert.ToBoolean(data["IS_DCLND"]);
+            o.isCanceled = Convert.ToBoolean(data["IS_CNCLD"]);
             o.ImageUrl = data["IMG_URL"].Str();
 
             
@@ -1580,6 +1594,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.DisplayName = data["FLL_NM"].Str();
             o.ProfileImageUrl = data["IMG_URL"].Str();
             o.MobileNo = data["MOB_NO"].Str();
+            o.IsConnected = Convert.ToBoolean(data["IS_CNCTD"]);
 
             //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());
             return o;

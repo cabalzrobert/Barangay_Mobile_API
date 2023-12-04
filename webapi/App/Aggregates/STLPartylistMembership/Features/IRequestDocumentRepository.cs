@@ -159,7 +159,7 @@ namespace webapi.App.Aggregates.STLPartylistDashboard.Features
                 var row = ((IDictionary<string, object>)result);
                 var ResultCode = row["RESULT"].Str();
                 if (ResultCode == "1")
-                    return (Results.Success, "Invitation Successfully Sent");
+                    return (Results.Success, "Invite link is sent to ");
                 else if (ResultCode == "0")
                     return (Results.Failed, "Check Details, Please try again");
                 else if (ResultCode == "2")

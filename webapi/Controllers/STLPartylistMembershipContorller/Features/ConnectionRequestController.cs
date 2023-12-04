@@ -72,6 +72,20 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
             return NotFound();
         }
 
+        [HttpPost]
+        [Route("request/send")]
+        public async Task<IActionResult> SendConnectionRequest([FromBody] ConnectionRequest req)
+        {
+            var result = await _repo.SendConnectionRequestAsync(req);
+            if (result.result == Results.Success)
+            {
+                return Ok(new { Status = "ok", Message = result.message, Content = req });
+            }
+            else if (result.result == Results.Failed)
+                return Ok(new { Status = "error", Message = result.message, Content = req });
+            return NotFound();
+        }
+
 
         //[HttpPost]
         //[Route("residents/search")]

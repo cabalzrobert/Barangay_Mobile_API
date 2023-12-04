@@ -92,7 +92,7 @@ namespace webapi.Controllers.STLPartylistMembership
             {
                 var token = CreateToken(result.account);
                 var data = await _repo.MemberGroup(result.account);
-                return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group });
+                return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group, Announcement = data.Announcement });
             }
             else if (result.result == SignInResults.ChangePassword)
                 return Ok(new { Status = "ok", Mode = "change-password", Message = result.message, PLID = request.plid, PGRPID = request.groupid, PSNCD = request.psncd });
