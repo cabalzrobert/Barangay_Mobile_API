@@ -29,6 +29,8 @@ namespace webapi.App.RequestModel.Common
         public string OTP;
         public string MOB_NO;
         public string DONO_ID;
+        public string CommunityID;
+        public string PostID;
         public string num_row;
         public string Region;
         public string Province;
@@ -39,6 +41,8 @@ namespace webapi.App.RequestModel.Common
         public string Invitationlist;
         public string Category;
         public string EmergencyType;
+        public int NextFilter;
+        public int FilterBy;
 
 
 

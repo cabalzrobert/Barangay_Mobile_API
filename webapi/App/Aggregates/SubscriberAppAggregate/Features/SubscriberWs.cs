@@ -80,6 +80,9 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
             stack.subscribe($"/{account.PL_ID}/notify", this.receivedCompanyNotication);
             //stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/chat", this.receivedBranchPublicChat);
             stack.subscribe($"/{account.PL_ID}/chat", this.receivedBranchPublicChat);
+            stack.subscribe($"/{account.PL_ID}/commentpostcommunity", this.receivedCommentPostCommunity);
+            stack.subscribe($"/{account.PL_ID}/postcommunity/reaction", this.receivedReactionPostCommunity);
+            stack.subscribe($"/{account.PL_ID}/postcommunity/comment/reaction", this.receivedReactionCommentPostCommunity);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/notify", this.receivedBranchNotication);
             //stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/chatmessageread", this.ChatMessageIsReadNotication);
 
@@ -92,6 +95,7 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/balance", this.receivedSubscriberBalance);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/livestream", this.receivedSubscriberBalance);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/virtualid", this.receivedSubscriberVirtualID);
+
 
             //if(!account.GeneralCoordinatorID.IsEmpty())
             //    stack.subscribe($"/{account.CompanyID}/{account.BranchID}/{account.GeneralCoordinatorID}/downline", this.receivedSubscriberNotification);
@@ -128,6 +132,18 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
         }
         private void receivedBranchPublicChat(Ultralight.StompMessage message){
             stomp("/chat/pub", message.Body);
+        }
+        private void receivedCommentPostCommunity(Ultralight.StompMessage message)
+        {
+            stomp("/commentpostcommunity", message.Body);
+        }
+        private void receivedReactionCommentPostCommunity(Ultralight.StompMessage message)
+        {
+            stomp("/postcommunity/comment/reaction", message.Body);
+        }
+        private void receivedReactionPostCommunity(Ultralight.StompMessage message)
+        {
+            stomp("/postcommunity/reaction", message.Body);
         }
         //
         private void receivedSubscriberChat(Ultralight.StompMessage message){

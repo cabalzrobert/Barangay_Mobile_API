@@ -594,6 +594,209 @@ namespace webapi.App.Aggregates.Common.Dto
         }
 
 
+        public static IEnumerable<dynamic> GetAllCommunityList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllCommunity_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllCommunity_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllCommunity_List(e));
+        }
+        public static IDictionary<string, object> Get_AllCommunity_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.CommunityID = data["COMM_ID"].Str();
+            o.CommunityName = data["COMM_NM"].Str();
+            o.CommunityDescription = data["COMM_DESC"].Str();
+            o.TypeLevel = data["TYP_LVL"].Str();
+            o.TypeLevelDescription = data["Typ_Level_Desc"].Str();
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetAllPostCommunityList(IEnumerable<dynamic> data, string userid = "", int limit = 25, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllPostCommunity_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllPostCommunity_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllPostCommunity_List(e));
+        }
+        public static IDictionary<string, object> Get_AllPostCommunity_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.PosterName = data["POSTER_NM"].Str();
+            o.PosterImage = data["POSTER_IMG"].Str();
+            o.PostID = data["POST_ID"].Str();
+            o.PostTitle = data["POST_TTL"].Str();
+            o.PostDescription = data["POST_DESC"].Str();
+            o.isInActive = Convert.ToBoolean(data["isInActive"]);
+            o.URL = data["IMG_CONTENT"].Str();
+            o.CommunityID = data["COMM_ID"].Str();
+            o.PosterID = data["USR_ID"].Str();
+            o.isLeave = Convert.ToBoolean(data["isLEAVE"]);
+            o.CommunityName = data["COMM_NM"].Str();
+            o.CommunityDescription = data["COMM_DESC"].Str();
+            o.Post_Date = data["UPD_DT"].Str();
+            o.Total_Comment = data["Total_Comment"].Str();
+            //o.Total_CommenAb = GetTotalAbbreviation(999); ;
+            o.isLike = Convert.ToInt32(data["isLike"]);
+            o.isDisLike = Convert.ToInt32(data["isDisLike"]);
+            o.Total_Like = data["Total_Like"].Str();
+            //o.Total_LikeAb = GetTotalAbbreviation(Convert.ToDouble(data["Total_Like"]));
+            //o.Total_LikeAb = GetTotalAbbreviation(999999999);
+            o.Total_Dislike = data["Total_disLike"].Str();
+            //o.Total_DislikeAb = GetTotalAbbreviation(Convert.ToDouble(data["Total_disLike"]));
+            //o.Total_DislikeAb = GetTotalAbbreviation(999999);
+            return o;
+        }
+        public static string GetTotalAbbreviation(double total)
+        {
+            string strtotal = "0";
+            if (total >= 0 && total <= 999)
+                strtotal = total.Str();
+            else if(total > 999 && total <= 999999)
+            {
+                if(total % 1000 == 0)
+                    strtotal = (total / 1000).Str() + "K";
+                else
+                {
+                    int htotal = Convert.ToInt32(total) % 1000;
+                    if(htotal % 100 == 0)
+                    {
+                        strtotal = (Convert.ToInt32(total) / 1000).Str() + "."+ (Convert.ToInt32(htotal) /100) +"K";
+                    }
+                    else
+                    {
+                        strtotal = (Convert.ToInt32(total) / 1000).Str() + "." + (Convert.ToInt32(htotal) / 100) + "K+";
+                    }
+                }
+            }
+            else if(total > 999999 && total <= 999999999)
+            {
+                if(total % 1000000 == 0)
+                {
+                    strtotal = (Convert.ToInt32(total) / 1000000).Str() + "M";
+                }
+                else
+                {
+                    int ktotal = Convert.ToInt32(total) % 1000000;
+                    if(ktotal % 1000 == 0)
+                    {
+                        strtotal = (Convert.ToInt32(total) / 1000000).Str() + "." + (ktotal / 1000).Str() + "M";
+                    }
+                    else
+                    {
+                        strtotal = (Convert.ToInt32(total) / 1000000).Str() + "." + (ktotal / 10000).Str() + "M+";
+                    }
+                }
+            }
+            return strtotal;
+        }
+
+        public static IEnumerable<dynamic> GetAllCommentPostCommunityList(IEnumerable<dynamic> data, string userid = "", int limit = 30, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllCommentPostCommunity_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllCommentPostCommunity_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllCommentPostCommunity_List(e));
+        }
+        public static IDictionary<string, object> Get_AllCommentPostCommunity_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.CommenterName = data["CommenterName"].Str();
+            o.CommenterMobileNumber = data["CommenterMobileNumber"].Str();
+            o.CommenterImage = data["CommenterImage"].Str();
+            o.CommunityID = data["COMM_ID"].Str();
+            o.PostID = data["POST_ID"].Str();
+            o.USR_ID = data["USR_ID"].Str();
+            o.CommentID = data["CMN_ID"].Str();
+            o.CommentLevel = data["COMN_LVL"].Str();
+            o.CommentDescription = data["CMN_DESCRIPTION"].Str();
+            o.Total_Like = Convert.ToInt32(data["Total_Like"]);
+            o.Total_disLike = Convert.ToInt32(data["Total_disLike"]);
+            o.isLike = Convert.ToInt32(data["isLike"]);
+            o.isDisLike = Convert.ToInt32(data["isDisLike"]);
+            o.Post_Date = data["Post_Date"].Str();
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetAllCommunitiesList(IEnumerable<dynamic> data, string userid = "", int limit = 30, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllCommunities_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllCommunities_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllCommunities_List(e));
+        }
+        public static IDictionary<string, object> Get_AllCommunities_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.CommunityID = data["COMM_ID"].Str();
+            o.CommunityName = data["COMM_NM"].Str();
+            o.CommunityDescription = data["COMM_DESC"].Str();
+            o.CommunityPostCount = data["POST_COUNT"].Str();
+            o.CommunityTypeLevel = data["TYP_LVL"].Str();
+            o.CommunityTypeLevelDescription = data["Typ_Level_Desc"].Str();
+            return o;
+        }
+
         public static IEnumerable<dynamic> GetAllContactList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
         {
             if (data == null) return null;

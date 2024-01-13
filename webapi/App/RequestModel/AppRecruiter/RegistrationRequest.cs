@@ -95,6 +95,41 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string Search;
         public string NextFilter;
     }
+    public class Community 
+    {
+        public string PL_ID;
+        public string PGRP_ID;
+        public string USR_ID;
+        public string CommunityJson;
+    }
+    public class PostCommentCommunity
+    {
+        public string PostID;
+        public string CommunityID;
+        public string CommenterName;
+        public string CommentID;
+        public string CommentDescription;
+        public string USR_ID;
+        public string Post_Date;
+    }
+    public class PostCommunityReaction
+    {
+        public string PostID;
+        public string CommunityID;
+        public string USR_ID;
+        public int isLike;
+        public int isDislike;
+    }
+    public class CommentPostCommunityReaction
+    {
+        public string CommentID;
+        public string PostID;
+        public string CommunityID;
+        public string USR_ID;
+        public int isLike;
+        public int isDislike;
+    }
+
 
     public class Employment_History
     {

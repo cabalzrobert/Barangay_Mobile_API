@@ -22,6 +22,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
         Task<(Results result, String message)> RequiredChangePassword(RequiredChangePassword request);
         Task<(object PartyList, object Group, object Announcement)> MemberGroup(STLAccount account);
         Task<(Results result, String message)> GetSubscriberID(STLSignInRequest request);
+        Task<(Results result, string countmembercommunity)> CountMemberCommunityAsync(STLAccount account);
     }
     public class AccountRepository : IAccountRepository
     {
@@ -47,6 +48,22 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                 return (SignInResults.ApkUpdate, "New version available", result["APP_VRSN"].Str(), result["APK_UPDT_URL"].Str());
             }
             return (SignInResults.Null, null, null, null);
+        }
+
+        public async Task<(Results result, string countmembercommunity)> CountMemberCommunityAsync(STLAccount account)
+        {
+            var results = _repo.DSpQueryMultiple("dbo.spfn_BIMSRAC000J1", new Dictionary<string, object>(){
+                {"parmplid",account.PL_ID },
+                {"parmpgrpid",account.PGRP_ID },
+                {"parmuserid",account.USR_ID },
+            }).ReadFirstOrDefault();
+            if (results != null)
+            {
+                var row = ((IDictionary<string, object>)results);
+                string ResultCode = row["RESULT"].Str();
+                return (Results.Success, ResultCode);
+            }
+            return (Results.Null, "0");
         }
 
         public async Task<(Results result, string message)> GetSubscriberID(STLSignInRequest request)
@@ -179,25 +196,31 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         LOC_SIT_NM = textInfo.ToUpper(row["LOC_SIT_NM"].Str()),
                         PLC_BRT = textInfo.ToUpper(row["PLC_BRT"].Str()),
                         HEIGHT = row["HEIGHT"].Str(),
-                        WEIGHT = (row["WEIGHT"].Str().Replace("kg", "") == "") ? 0 : Decimal.Parse(row["WEIGHT"].Str().Replace("kg","")),
+                        WEIGHT = (row["WEIGHT"].Str().Replace("kg", "") == "") ? 0 : Decimal.Parse(row["WEIGHT"].Str().Replace("kg", "")),
                         REL = row["REL"].Str(),
                         DESCRIPTION = row["DESCRIPTION"].Str(),
-                         
-                        Father = new STLAccount.Person { 
-                            Firstname = row["FR_FRST_NM"].Str(), 
-                            Middlename = row["FR_MI_NM"].Str(), 
+
+                        Father = new STLAccount.Person
+                        {
+                            Firstname = row["FR_FRST_NM"].Str(),
+                            Middlename = row["FR_MI_NM"].Str(),
                             Lastname = row["FR_LST_NM"].Str(),
-                            Fullname = row["FR_FLL_NM"].Str()},
-                        Mother = new STLAccount.Person {
+                            Fullname = row["FR_FLL_NM"].Str()
+                        },
+                        Mother = new STLAccount.Person
+                        {
                             Firstname = row["MOM_FRST_NM"].Str(),
                             Middlename = row["MOM_MI_NM"].Str(),
                             Lastname = row["MOM_LST_NM"].Str(),
-                            Fullname = row["MOM_FLL_NM"].Str()},
-                        Spouse = new STLAccount.Person { 
+                            Fullname = row["MOM_FLL_NM"].Str()
+                        },
+                        Spouse = new STLAccount.Person
+                        {
                             Firstname = row["SP_FRST_NM"].Str(),
                             Middlename = row["SP_MI_NM"].Str(),
                             Lastname = row["SP_LST_NM"].Str(),
-                            Fullname = row["SP_FLL_NM"].Str()},
+                            Fullname = row["SP_FLL_NM"].Str()
+                        },
 
                         GNDR = row["GNDR"].Str(),
                         MRTL_STAT = row["MRTL_STAT"].Str(),
@@ -227,7 +250,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         SPERM_RES = (bool)row["SPERM_RES"],
                         FRNT_ID = row["FRNT_ID"].Str(),
                         BCK_ID = row["BCK_ID"].Str()
-                    }); 
+                    });
                 }
                 else if (ResultCode == "52")
                     return (SignInResults.ChangePassword, "Your are required to change password", null);
