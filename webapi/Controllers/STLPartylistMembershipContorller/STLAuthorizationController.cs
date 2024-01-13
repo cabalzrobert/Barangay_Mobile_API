@@ -45,6 +45,20 @@ namespace webapi.Controllers.STLPartylistMembership
             return NotFound();
         }
 
+        [HttpPost]
+        [Route("account/forgotpassword")]
+        public async Task<IActionResult> ResetPasswordConfirm([FromBody] RequiredChangePassword request)
+        {
+            var repoResult = await _repo.ResetChangePassword(request);
+            if (repoResult.result == Results.Success)
+            {
+                return Ok(new { Status = "ok", Message = repoResult.message, OTP = repoResult.OTP });
+            }
+            else if (repoResult.result == Results.Failed)
+                return Ok(new { Status = "error", Message = repoResult.message });
+            return NotFound();
+        }
+
 
         [HttpPost]
         [Route("account/apkupdate")]
@@ -91,9 +105,18 @@ namespace webapi.Controllers.STLPartylistMembership
             if (result.result == SignInResults.Success)
             {
                 var token = CreateToken(result.account);
+
                 var data = await _repo.MemberGroup(result.account);
                 var cjc = await _repo.CountMemberCommunityAsync(result.account);
                 return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group, Announcement = data.Announcement, NumberofJoinCommunity = cjc.countmembercommunity });
+
+                if (result.account.PL_ID != "0000")
+                {
+                    var data = await _repo.MemberGroup(result.account);
+                    return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group, Announcement = data.Announcement });
+                }
+                return Ok(new { Status = "ok", Account = result.account, Auth = token });
+
             }
             else if (result.result == SignInResults.ChangePassword)
                 return Ok(new { Status = "ok", Mode = "change-password", Message = result.message, PLID = request.plid, PGRPID = request.groupid, PSNCD = request.psncd });

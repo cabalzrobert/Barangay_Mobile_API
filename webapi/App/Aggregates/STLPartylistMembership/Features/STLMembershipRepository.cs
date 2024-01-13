@@ -61,8 +61,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         {
             var results = _repo.DSpQueryMultiple("dbo.spfn_BDABDBCAACBB01", new Dictionary<string, object>()
             {
-                {"parmplid",info.PL_ID },
-                {"parmpgrpid",info.PGRP_ID },
+                {"parmplid","0000" },
+                {"parmpgrpid","000" },
                 {"parmfnm",info.Firstname },
                 {"parmlnm",info.Lastname },
                 {"parmmnm",info.Middlename },
@@ -90,7 +90,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 {"parmusertype",info.AccountType },
 
                 {"parmusername",info.Username },
-                //{"parmpassword",membership.Userpassword },
+                {"parmpassword",info.Password },
                 {"parmusrid",(isUpdate?info.Userid:"") },
                 {"parmrlgn",info.Religion },
                 {"parmhght",info.Height },
