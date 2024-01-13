@@ -53,5 +53,6 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string OldPassword;
         public string Password;
         public string ConfirmPassword;
+        public string MobileNumber;
     }
 }

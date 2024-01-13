@@ -20,6 +20,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
         Task<(SignInResults result, String message, String apkVersion, String apkUrl)> ApkUpdateCheckerAsync(STLSignInRequest request);
         Task<(SignInResults result, String message, STLAccount account)> STLSignInAsync(STLSignInRequest request);
         Task<(Results result, String message)> RequiredChangePassword(RequiredChangePassword request);
+        Task<(Results result, string message, string OTP)> ResetChangePassword(RequiredChangePassword request);
         Task<(object PartyList, object Group, object Announcement)> MemberGroup(STLAccount account);
         Task<(Results result, String message)> GetSubscriberID(STLSignInRequest request);
     }
@@ -119,6 +120,34 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                 return (Results.Null, "Failed to Change! your request is already done");
             }
             return (Results.Null, null);
+        }
+
+        public async Task<(Results result, string message, string OTP)> ResetChangePassword(RequiredChangePassword request)
+        {
+            var result = _repo.DSpQuery<dynamic>($"dbo.spfn_MOBFRGTPSSWRD", new Dictionary<string, object>()
+            {
+                {"parmplid", request.PLID },
+                {"parmpgrpid", request.PGRPID },
+                {"parmmobno", request.MobileNumber },
+                {"parmnewpass", request.Password }
+            }).FirstOrDefault();
+            if (result != null)
+            {
+                var row = ((IDictionary<string, object>)result);
+                var ResultCode = row["RESULT"].Str();
+                if (ResultCode == "1")
+                    return (Results.Success, "Successfully searched.", row["OTP"].Str());
+                else if (ResultCode == "101")
+                    return (Results.Success, "Your password has been reset.",null);
+                else if (ResultCode == "62")
+                    return (Results.Null, "You are trying to user your old password, please try again.", null);
+                else if (ResultCode == "0")
+                    return (Results.Failed, "Account you're searching doesn't exist.", null);
+                else if (ResultCode == "21")
+                    return (Results.Null, "You are try to access block account, please try again.", null);
+                return (Results.Null, "Failed to Change! your request is already done", null);
+            }
+            return (Results.Null, null, null);
         }
 
         public async Task<(SignInResults result, String message, STLAccount account)> STLSignInAsync(STLSignInRequest request)
@@ -230,16 +259,16 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                     }); 
                 }
                 else if (ResultCode == "52")
-                    return (SignInResults.ChangePassword, "Your are required to change password", null);
+                    return (SignInResults.ChangePassword, "Your are required to change password.", null);
                 else if (ResultCode == "21")
-                    return (SignInResults.Failed, "Your account has blocked by admin", null);
+                    return (SignInResults.Failed, "Your account has blocked by admin.", null);
                 else if (ResultCode == "22")
-                    return (SignInResults.Failed, "Party List has blocked by admin", null);
+                    return (SignInResults.Failed, "Party List has blocked by admin.", null);
                 else if (ResultCode == "23")
-                    return (SignInResults.Failed, "Your Group has blocked by admin", null);
+                    return (SignInResults.Failed, "Your Group has blocked by admin.", null);
                 else if (ResultCode == "101")
-                    return (SignInResults.Failed, "Your account has not been verified", null);
-                return (SignInResults.Failed, "Invalid mobile number and password! Please try again", null);
+                    return (SignInResults.Failed, "Your account has not been verified.", null);
+                return (SignInResults.Failed, "Username or password doesn't match.", null);
             }
             return (SignInResults.Null, null, null);
         }

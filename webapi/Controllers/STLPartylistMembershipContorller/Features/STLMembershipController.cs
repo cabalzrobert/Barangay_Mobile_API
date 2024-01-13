@@ -45,16 +45,16 @@ namespace webapi.Controllers.STLPartylistMembership.Features
             /*
              1.) Get the PL_ID and PGRP_ID for the registration
              */
-            var valsubsrciber = await _repo.GetBarangaySubscriberAsync(request);
-            if(valsubsrciber.result !=Results.Success)
-                return Ok(new { Status = "error", Message = valsubsrciber.message });
+            //var valsubsrciber = await _repo.GetBarangaySubscriberAsync(request);
+            //if(valsubsrciber.result !=Results.Success)
+            //    return Ok(new { Status = "error", Message = valsubsrciber.message });
 
             //Process to Upload ProfilePicture
-            var valresult = await validity(request);
-            if (valresult.result == Results.Failed)
-                return Ok(new { Status = "error", Message = valresult.message });
-            if (valresult.result != Results.Success)
-                return NotFound();
+            //var valresult = await validity(request);
+            //if (valresult.result == Results.Failed)
+            //    return Ok(new { Status = "error", Message = valresult.message });
+            //if (valresult.result != Results.Success)
+            //    return NotFound();
             //Process to save Membership Account
             var reporesult = await _repo.MembershipAsync(request);
 
