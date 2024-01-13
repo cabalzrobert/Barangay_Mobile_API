@@ -237,7 +237,7 @@ namespace webapi.App.RequestModel.AppRecruiter
 
         public string AccountType;
         public string Username;
-        public string Userpassword;
+        public string Password;
         public string SubType;
         public string Type;
 
