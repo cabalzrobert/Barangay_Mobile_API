@@ -406,4 +406,16 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string ChatID;
     }
 
+    public class AccountVerification
+    {
+        public string Userid;
+        public string Region;
+        public string Province;
+        public string City;
+        public string Barangay;
+        public string Sitio;
+        public string SelfieUrl;
+        public string DocUrl;
+    }
+
 }

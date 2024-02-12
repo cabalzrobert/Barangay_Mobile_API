@@ -50,11 +50,11 @@ namespace webapi.Controllers.STLPartylistMembership.Features
             //    return Ok(new { Status = "error", Message = valsubsrciber.message });
 
             //Process to Upload ProfilePicture
-            //var valresult = await validity(request);
-            //if (valresult.result == Results.Failed)
-            //    return Ok(new { Status = "error", Message = valresult.message });
-            //if (valresult.result != Results.Success)
-            //    return NotFound();
+            var valresult = await validity(request);
+            if (valresult.result == Results.Failed)
+                return Ok(new { Status = "error", Message = valresult.message });
+            if (valresult.result != Results.Success)
+                return NotFound();
             //Process to save Membership Account
             var reporesult = await _repo.MembershipAsync(request);
 
