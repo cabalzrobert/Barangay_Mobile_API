@@ -24,6 +24,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
         Task<(object PartyList, object Group, object Announcement)> MemberGroup(STLAccount account);
         Task<(Results result, String message)> GetSubscriberID(STLSignInRequest request);
         Task<(Results result, string countmembercommunity)> CountMemberCommunityAsync(STLAccount account);
+        Task<(Results result, object item)> MemberCommunityList(STLAccount account);
     }
     public class AccountRepository : IAccountRepository
     {
@@ -49,6 +50,20 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                 return (SignInResults.ApkUpdate, "New version available", result["APP_VRSN"].Str(), result["APK_UPDT_URL"].Str());
             }
             return (SignInResults.Null, null, null, null);
+        }
+
+        public async Task<(Results result, object item)> MemberCommunityList(STLAccount account)
+        {
+            var results = _repo.DSpQuery<dynamic>("dbo.spfn_BIMSRAC000J2", new Dictionary<string, object>(){
+                {"parmplid",account.PL_ID },
+                {"parmpgrpid",account.PGRP_ID },
+                {"parmuserid",account.USR_ID },
+            });
+            if (results != null)
+            {
+                return (Results.Success, results);
+            }
+            return (Results.Null, null);
         }
 
         public async Task<(Results result, string countmembercommunity)> CountMemberCommunityAsync(STLAccount account)
@@ -105,8 +120,6 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                 return (PartyList, Group, Announcement);
             }
             return (null, null, null);
-
-
         }
 
         public async Task<(Results result, string message)> RequiredChangePassword(RequiredChangePassword request)

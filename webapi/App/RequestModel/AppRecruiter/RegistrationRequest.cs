@@ -129,6 +129,13 @@ namespace webapi.App.RequestModel.AppRecruiter
         public int isLike;
         public int isDislike;
     }
+    public class CommentPostCommunity
+    {
+        public string CommentID;
+        public string PostID;
+        public string CommunityID;
+        public string USR_ID;
+    }
 
 
     public class Employment_History

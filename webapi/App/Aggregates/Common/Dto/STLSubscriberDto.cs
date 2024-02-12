@@ -792,6 +792,7 @@ namespace webapi.App.Aggregates.Common.Dto
             o.CommunityName = data["COMM_NM"].Str();
             o.CommunityDescription = data["COMM_DESC"].Str();
             o.CommunityPostCount = data["POST_COUNT"].Str();
+            o.CommunityJoinCount = data["JOINERS_COUNT"].Str();
             o.CommunityTypeLevel = data["TYP_LVL"].Str();
             o.CommunityTypeLevelDescription = data["Typ_Level_Desc"].Str();
             return o;
@@ -1757,7 +1758,8 @@ namespace webapi.App.Aggregates.Common.Dto
             o.DateSend = data["RGS_TRN_TS"].Str();
             o.Message = data["MSG"].Str();
             o.IsYou = Convert.ToBoolean(data["IsYou"]);
-            o.IsConnected = (byte)data["IS_CNCTD"] == 0 ? false : true;
+            //o.IsConnected = (byte)data["IS_CNCTD"] == 0 ? false : true;
+            o.IsConnected = (Convert.ToInt32(data["IS_CNCTD"]) == 0) ? false : true;
             o.Count = (data["Unread"].Str() == "0") ? "" : data["Unread"].Str();
 
             //o.isLeader = Convert.ToBoolean(data["isLeader"].Str());
@@ -1966,6 +1968,143 @@ namespace webapi.App.Aggregates.Common.Dto
             o.PRF_PIC = data["PRF_PIC"].Str();
             o.MOB_NO = data["MOB_NO"].Str();
             return o;
+        }
+
+        public static IEnumerable<dynamic> GetCommentPostCommunityView(IEnumerable<dynamic> data, string userid = "", int limit = 30, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => GetCommentPostCommunity_View(e));
+        }
+
+        public static IDictionary<string, object> GetCommentPostCommunity_View(IDictionary<string, object> e, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.CommunityID = e["COMM_ID"].Str();
+            o.PostID = e["POST_ID"].Str();
+            o.CommentID = e["CMN_ID"].Str();
+            o.CommunityCreated = e["CommunityCreated"].Str();
+            o.CommunityImage = e["CommunityImage"].Str();
+            o.Post_Title = e["POST_TTL"].Str();
+            o.Post_Description = e["POST_DESC"].Str();
+            o.Post_ImgContent = e["IMG_CONTENT"].Str();
+            o.PosterName = e["PosterName"].Str();
+            o.PosterImage = e["PoseterImage"].Str();
+            o.isLikePost = Convert.ToInt32(e["isLikePost"]);
+            o.isDisLikePost = Convert.ToInt32(e["isDisLikePost"]);
+            o.Comment_Count = e["COMMENT_COUNT"].Str();
+            o.Community_Total_Like = e["Total_Like"].Str();
+            o.Community_Total_DisLike = e["Total_disLike"].Str();
+            o.CommunityName = e["COMM_NM"].Str();
+            o.CommunityDescription = e["COMM_DESC"].Str();
+            o.CommentDescription = e["CMN_DESCRIPTION"].Str();
+            o.CommunityLevel = e["COMN_LVL"].Str();
+            o.PostDate = e["POST_DT"].Str();
+            o.PostTime = Get_Time(Convert.ToDateTime(e["POST_DT"]));
+            o.PostTotal_Like = e["Total_Like"].Str();
+            o.PostTotal_DisLike = e["Total_disLike"].Str();
+            o.CommenterImage = e["CommenterImage"].Str();
+            o.CommentDate = e["COMN_DT"].Str();
+            o.CommentTime = Get_Time(Convert.ToDateTime(e["COMN_DT"]));
+            o.CommunityDate = e["COMM_DT"].Str();
+            o.CommunityTime = Get_Time(Convert.ToDateTime(e["COMM_DT"]));
+            o.CommenterID = e["CommenterID"].Str();
+            o.CommenterName = e["CommenterName"].Str();
+            o.Comment_Total_Like = e["TotalComment_Like"].Str();
+            o.Comment_Total_DisLike = e["TotalComment_dislike"].Str();
+            o.isLikeComment = Convert.ToInt32(e["isLikeComment"]);
+            o.isDisLikeComment = Convert.ToInt32(e["isDisLikeComment"]);
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetAllCommentPostCommunitiesList(IEnumerable<dynamic> data, string userid = "", int limit = 30, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetAllCommentPostCommunities_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+        }
+        public static IEnumerable<dynamic> GetAllCommentPostCommunities_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_AllCommentPostCommunities_List(e));
+        }
+        public static IDictionary<string, object> Get_AllCommentPostCommunities_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            dynamic o = Dynamic.Object;
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            o.num_row = data["Num_Row"].Str();
+            o.CommunityID = data["COMM_ID"].Str();
+            o.CommunityName = data["COMM_NM"].Str();
+            o.CommunityDescription = data["COMM_DESC"].Str();
+            o.CommunityPostCount = data["POST_COUNT"].Str();
+            o.CommunityTypeLevel = data["TYP_LVL"].Str();
+            o.CommunityTypeLevelDescription = data["Typ_Level_Desc"].Str();
+            return o;
+        }
+
+        public static string Get_Time(DateTime Post_Date)
+        {
+            var milliseconds = DateTime.Now.Subtract(Post_Date);
+            var d = milliseconds.Days;
+            var h = milliseconds.Hours;
+            var mi = milliseconds.Minutes;
+            var ss = milliseconds.Seconds;
+            var mls = milliseconds.Milliseconds;
+            if (d == 0 && h == 0 && mi == 0 && ss > 0)
+            {
+                if (ss == 1)
+                    return ss + " second ago";
+                return ss + " seconds ago";
+            }
+            else if (d == 0 && h == 0 && mi < 60)
+            {
+                if (mi == 1)
+                    return mi + " minute ago";
+                return mi + " minutes ago";
+            }
+            else if (d == 0 && h < 24)
+            {
+                if (h == 1)
+                    return h + " hour ago";
+                return h + " hours ago";
+            }
+            else if (d >= 1) //days
+            {
+                if (d == 1)
+                    return d + " day ago";
+                else if (d > 1 && d < 365)
+                {
+                    if (d < 30)
+                        return d + " days ago";
+                    var dd = d / 30;
+                    if (dd == 1)
+                    {
+                        return "1 month ago";
+                    }
+                    else if (dd > 1 && dd <= 12)
+                    {
+                        return dd + " months ago";
+                    }
+                }
+                else
+                {
+                    var dd = d / 365;
+                    if (dd == 1)
+                        return "1 year ago";
+                    else
+                        return dd + " years ago";
+                }
+            }
+            return "1 second ago";
         }
     }
 }

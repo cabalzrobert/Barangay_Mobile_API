@@ -43,6 +43,9 @@ namespace webapi.App.RequestModel.Common
         public string EmergencyType;
         public int NextFilter;
         public int FilterBy;
+        public string MemberofCommunity;
+        public string StartDate;
+        public string EndDate;
 
 
 

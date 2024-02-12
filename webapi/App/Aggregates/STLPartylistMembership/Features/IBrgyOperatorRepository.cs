@@ -20,10 +20,10 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req);
         Task<(Results result, object prev)> Load_PrevComAccount(FilterRequest req);
     }
-    public class BrgyOperatorRepository: IBrgyOperatorRepository
+    public class BrgyOperatorRepository : IBrgyOperatorRepository
     {
         private readonly ISubscriber _identity;
-        public readonly IRepository _repo; 
+        public readonly IRepository _repo;
         public STLAccount account { get { return _identity.AccountIdentity(); } }
         public BrgyOperatorRepository(ISubscriber identity, IRepository repo)
         {
@@ -53,6 +53,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     //{"parmplid",account.PL_ID },
                     //{"parmpgrpid",account.PGRP_ID },
                     {"parmusrid", $"{account.PL_ID}{account.USR_ID}" },
+                    {"parmrownum", req.NextFilter },
                     {"parmsearch", req.Search }
                 });
             if (result != null)

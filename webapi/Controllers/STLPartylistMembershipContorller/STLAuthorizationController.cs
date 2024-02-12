@@ -106,16 +106,19 @@ namespace webapi.Controllers.STLPartylistMembership
             {
                 var token = CreateToken(result.account);
 
-                var data = await _repo.MemberGroup(result.account);
-                var cjc = await _repo.CountMemberCommunityAsync(result.account);
-                return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group, Announcement = data.Announcement, NumberofJoinCommunity = cjc.countmembercommunity });
+                //var data = await _repo.MemberGroup(result.account);
+                //var cjc = await _repo.CountMemberCommunityAsync(result.account);
+                //return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group, Announcement = data.Announcement, NumberofJoinCommunity = cjc.countmembercommunity });
 
                 if (result.account.PL_ID != "0000")
                 {
                     var data = await _repo.MemberGroup(result.account);
-                    return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group, Announcement = data.Announcement });
+                    //return Ok(new { Status = "ok", Account=result.account, Auth = token, Company = data.PartyList, Group=data.Group, Announcement = data.Announcement });
+                    var cjc = await _repo.CountMemberCommunityAsync(result.account);
+                    var mc = await _repo.MemberCommunityList(result.account);
+                    return Ok(new { Status = "ok", Account = result.account, Auth = token, Company = data.PartyList, Group = data.Group, Announcement = data.Announcement, NumberofJoinCommunity = cjc.countmembercommunity, Community =mc.item });
                 }
-                return Ok(new { Status = "ok", Account = result.account, Auth = token });
+                return Ok(new { Status = "ok", Account = result.account, Auth = token, Company = "", Group = "", Announcement = "", NumberofJoinCommunity = "0", Community = "" });
 
             }
             else if (result.result == SignInResults.ChangePassword)

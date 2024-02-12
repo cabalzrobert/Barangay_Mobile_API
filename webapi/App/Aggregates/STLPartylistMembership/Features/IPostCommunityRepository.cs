@@ -26,6 +26,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         Task<(Results result, object comm)> LoadCommunityListAsync(FilterRequest req);
         Task<(Results result, string Message)> ReactionPostCommunityAsync(PostCommunityReaction req);
         Task<(Results result, string Message)> ReactionCommentPostCommunityAsync(CommentPostCommunityReaction req);
+        Task<(Results result, object commentnotifcation)> ViewCommentPostCommunityAsync(CommentPostCommunity req);
     }
     public class PostCommunityRepository : IPostCommunityRepository
     {
@@ -99,6 +100,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             req.CommentID = ((int)DateTime.Now.ToTimeMillisecond()).ToString("X");
             req.Post_Date = DateTime.Now.Str();
             req.CommenterName = account.FLL_NM;
+            req.USR_ID = account.USR_ID;
             var result = _repo.DSpQueryMultiple($"dbo.spfn_BIMSRACCOM0001", new Dictionary<string, object>()
             {
                 {"parmplid",account.PL_ID },
@@ -159,6 +161,22 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             if (result != null)
                 return (Results.Success, STLSubscriberDto.GetAllCommunitiesList(result.Read<dynamic>(), req.Userid, 30));
             return (Results.Null, null); throw new NotImplementedException();
+        }
+
+        public async Task<(Results result, object commentnotifcation)> ViewCommentPostCommunityAsync(CommentPostCommunity req)
+        {
+            var result = _repo.DSpQueryMultiple($"dbo.spfn_BIMSRACPOSTCOM0001", new Dictionary<string, object>()
+            {
+                {"parmcommunityid",req.CommunityID },
+                {"parmpostid",req.PostID },
+                {"parmcommentid",req.CommentID },
+                {"parmuserid",account.USR_ID },
+            });
+            if (result != null)
+            {
+                return (Results.Success, STLSubscriberDto.GetCommentPostCommunityView(result.Read<dynamic>(), account.USR_ID, 30));
+            }
+            return (Results.Null, null);
         }
 
 
@@ -263,5 +281,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             await Pusher.PushAsync($"/{account.PL_ID}/postcommunity/comment/reaction", new { type = "commentpostcommunity", content = req });
             return true;
         }
+
+        
     }
 }

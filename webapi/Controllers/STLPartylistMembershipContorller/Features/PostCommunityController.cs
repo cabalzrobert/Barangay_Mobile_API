@@ -61,6 +61,18 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
         }
 
         [HttpPost]
+        [Route("commentpostcommunity/view")]
+        public async Task<IActionResult> ViewCommentPostCommunityAsync([FromBody] CommentPostCommunity request)
+        {
+            var result = await _repo.ViewCommentPostCommunityAsync(request);
+            if (result.result == Results.Success)
+                return Ok(new { Status = "ok", CommentNotification = result.commentnotifcation });
+            else if (result.result != Results.Null)
+                return Ok(new { Status = "error", CommentNotification = result.commentnotifcation });
+            return NotFound();
+        }
+
+        [HttpPost]
         [Route("postcommentcommunity/add")]
         public async Task<IActionResult> AddPosition([FromBody] PostCommentCommunity req)
         {

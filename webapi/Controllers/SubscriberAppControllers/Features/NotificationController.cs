@@ -28,6 +28,16 @@ namespace webapi.Controllers.SubscriberAppControllers.Features
                 return Ok(repoResult.items);
             return NotFound();
         }
+        [HttpPost]
+        [Route("announcement")]
+        public async Task<IActionResult> Announcement([FromBody] FilterRequest filter)
+        {
+            if (!FilterRequest.validity0g(filter)) return NotFound();
+            var repoResult = await _notifyRepo.AnnouncementAsync(filter);
+            if (repoResult.result == Results.Success)
+                return Ok(repoResult.items);
+            return NotFound();
+        }
 
         [HttpPost]
         [Route("notification/{NotificationID}/seen")]

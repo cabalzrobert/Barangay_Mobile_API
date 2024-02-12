@@ -20,6 +20,7 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
     public interface INotificationRepository
     {
         Task<(Results result, object items)> NotificationAsync(FilterRequest filter);
+        Task<(Results result, object items)> AnnouncementAsync(FilterRequest filter);
         Task<(Results result, object obj)> SeenAsync(String NotificationID);
         Task<(Results result, object count)> UnseenCountAsync();
     }
@@ -40,6 +41,7 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
                 { "parmpgrpid", account.PGRP_ID },
                 { "parmuserid", account.USR_ID },
                 { "parmftrns", filter.BaseFilter },
+                { "parmmemberofcommunity", filter.MemberofCommunity },
             });
             if(results != null)
                 return (Results.Success, NotificationDto.FilterNotifications(results.Read(), 25));
@@ -65,6 +67,23 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
                 return (Results.Success, row["UN_OPN"].Str());
             }
             return (Results.Null, null); 
+        }
+
+        public async Task<(Results result, object items)> AnnouncementAsync(FilterRequest filter)
+        {
+            var results = _repo.DSpQueryMultiple("dbo.spfn_0AA0AB0D", new Dictionary<string, object>(){
+                { "parmplid", account.PL_ID },
+                { "parmpgrpid", account.PGRP_ID },
+                { "parmuserid", account.USR_ID },
+                { "parmstartdate", filter.StartDate },
+                { "parmenddate", filter.EndDate },
+                { "parmrownum", filter.num_row },
+                //{ "parmftrns", filter.BaseFilter },
+                //{ "parmmemberofcommunity", filter.MemberofCommunity },
+            });
+            if (results != null)
+                return (Results.Success, NotificationDto.FilterAnnouncements(results.Read(), 25));
+            return (Results.Null, null);
         }
     }
 }
