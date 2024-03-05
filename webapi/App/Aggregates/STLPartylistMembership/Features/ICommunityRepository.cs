@@ -63,7 +63,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 string ResultCode = row["RESULT"].Str();
                 if (ResultCode == "1")
                 {
-                    return (Results.Success, "Join community successful. Start exploring!");
+                    return (Results.Success, "Join the community successfully. Start exploring!");
                 }
                 else if (ResultCode == "2")
                     return (Results.Failed, "Please check your data entry. Please try again");

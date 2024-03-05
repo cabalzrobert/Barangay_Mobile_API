@@ -92,6 +92,8 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
             /*Send Message Notification*/
             stack.subscribe($"/{account.PL_ID}/{account.USR_ID}/receivedchat", this.receivedSubscriberReceivedChat);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/notify", this.receivedSubscriberNotification);
+            //stack.subscribe($"/{account.PL_ID}/{account.USR_ID}/strangerrequest/notify", this.receivedSubscriberStrangerRequest);
+            stack.subscribe($"/{account.PL_ID}/strangerrequest/notify", this.receivedSubscriberStrangerRequest);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/balance", this.receivedSubscriberBalance);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/livestream", this.receivedSubscriberBalance);
             stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/virtualid", this.receivedSubscriberVirtualID);
@@ -159,6 +161,10 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
         }
         private void receivedSubscriberNotification(Ultralight.StompMessage message){
             stomp("/notify", message.Body);
+        }
+        private void receivedSubscriberStrangerRequest(Ultralight.StompMessage message)
+        {
+            stomp("/strangerrequest/notify", message.Body);
         }
         private void receivedSubscriberBalance(Ultralight.StompMessage message){
             stomp("/balance", message.Body);

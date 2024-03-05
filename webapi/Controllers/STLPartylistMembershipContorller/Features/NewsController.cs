@@ -32,5 +32,14 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
                 return Ok(result.item);
             return NotFound();
         }
+        [HttpPost]
+        [Route("category")]
+        public async Task<IActionResult> category()
+        {
+            var result = await _repo.Load_CategoryAsync();
+            if (result.result == Results.Success)
+                return Ok(result.item);
+            return NotFound();
+        }
     }
 }

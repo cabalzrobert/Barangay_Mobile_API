@@ -86,6 +86,16 @@ namespace webapi.Controllers.STLPartylistDashboardContorller.Features
             return NotFound();
         }
 
+        [HttpPost]
+        [Route("request/unattended")]
+        public async Task<IActionResult> Task()
+        {
+            var repoResult = await _repo.UnattendedRequestAsync();
+            if (repoResult.result == Results.Success)
+                return Ok(repoResult.count);
+            return NotFound();
+        }
+
 
         //[HttpPost]
         //[Route("residents/search")]

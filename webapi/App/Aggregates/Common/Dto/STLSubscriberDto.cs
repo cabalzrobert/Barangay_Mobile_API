@@ -755,6 +755,10 @@ namespace webapi.App.Aggregates.Common.Dto
             o.CommentID = data["CMN_ID"].Str();
             o.CommentLevel = data["COMN_LVL"].Str();
             o.CommentDescription = data["CMN_DESCRIPTION"].Str();
+            o.isRemove = Convert.ToInt32(data["isREMOVE"]);
+            o.Reason = data["Reason"].Str();
+            o.isYou = Convert.ToInt32(data["isYou"]);
+            o.isViewRemoveComment = Convert.ToInt32(data["isViewRemoveComment"]);
             o.Total_Like = Convert.ToInt32(data["Total_Like"]);
             o.Total_disLike = Convert.ToInt32(data["Total_disLike"]);
             o.isLike = Convert.ToInt32(data["isLike"]);
@@ -1285,6 +1289,35 @@ namespace webapi.App.Aggregates.Common.Dto
             o.SchoolAddress = data["SCH_ADDRESS"].Str();
             o.SchoolYear = data["SCH_YEAR"].Str();
             o.Course = data["SCH_COURSE"].Str();
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetNewsCategoryList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            var items = GetNewsCategory_List(data);
+            var count = items.Count();
+            if (count >= limit)
+            {
+                var o = items.Last();
+                var filter = (o.NextFilter = Dynamic.Object);
+                items = items.Take(count - 1).Concat(new[] { o });
+                filter.NextFilter = o.num_row;
+                filter.Userid = userid;
+            }
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetNewsCategory_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_NewsCategory_List(e));
+        }
+        public static IDictionary<string, object> Get_NewsCategory_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.CategoryName = textInfo.ToTitleCase(data["category"].Str());
             return o;
         }
 
