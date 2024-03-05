@@ -237,7 +237,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
 
                 {"parmrlgn",info.Religion },
                 {"parmhght",info.Height },
-                {"parmwght",info.Weight+"kg" },
+                {"parmwght",string.IsNullOrEmpty(info.Weight)?"0":info.Weight+"kg" },
                 {"parmbrtpl",info.Birthplace },
 
                 {"parmfrfnm",info.Father?.Firstname ?? null},

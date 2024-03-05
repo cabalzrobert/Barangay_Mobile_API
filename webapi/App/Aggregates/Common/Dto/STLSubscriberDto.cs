@@ -1357,8 +1357,63 @@ namespace webapi.App.Aggregates.Common.Dto
             return o;
         }
 
+        public static IEnumerable<dynamic> GetSearchedResidentsList(IEnumerable<dynamic> data, string userid = "")
+        {
+            if (data == null) return null;
+            var items = GetSearchedResidents_List(data);
+            return items;
 
-        
+        }
+        public static IEnumerable<dynamic> GetSearchedResidents_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_SearchedResidents_List(e));
+        }
+        public static IDictionary<string, object> Get_SearchedResidents_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.UserId = data["USR_ID"].Str();
+            o.FullName = textInfo.ToTitleCase(data["FLL_NM"].Str().ToLower());
+            o.Gender = data["GNDR"].Str();
+            o.ProfilePic = data["PRF_PIC"].Str();
+            return o;
+        }
+
+        public static IEnumerable<dynamic> GetFamilyList(IEnumerable<dynamic> data, string userid = "")
+        {
+            if (data == null) return null;
+            var items = GetFamily_List(data);
+            return items;
+
+        }
+        public static IEnumerable<dynamic> GetFamily_List(IEnumerable<dynamic> data, bool fullinfo = true)
+        {
+            if (data == null) return null;
+            return data.Select(e => Get_Family_List(e));
+        }
+        public static IDictionary<string, object> Get_Family_List(IDictionary<string, object> data, bool fullinfo = true)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            dynamic o = Dynamic.Object;
+            o.num_row = data["Num_Row"].Str();
+            o.PL_ID = data["PL_ID"].Str();
+            o.PGRP_ID = data["PGRP_ID"].Str();
+            o.FamilyId = data["FAM_ID"].Str();
+            o.UserId = data["USR_ID"].Str();
+            o.MemberId = data["MBR_ID"].Str();
+            o.Name = data["FLL_NM"].Str();
+            o.Gender = data["GNDR"].Str();
+            o.Relationship = data["RLTSP"].Str();
+            o.ProfilePic = data["PRF_PIC"].Str();
+            return o;
+        }
+
+
+
 
 
         public static IEnumerable<dynamic> GetOrganizationHistoryList(IEnumerable<dynamic> data, string userid = "", int limit = 100, bool fullinfo = true)
