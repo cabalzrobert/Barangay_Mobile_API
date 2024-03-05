@@ -16,6 +16,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     public interface INewsRepository
     {
         Task<(Results result, object item)> Load_NewsAsync(FilterRequest req);
+        Task<(Results result, object item)> Load_CategoryAsync();
     }
     public class NewsRepository : INewsRepository
     {
@@ -32,12 +33,29 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         {
             var results = _repo.DSpQueryMultiple($"dbo.BIMSSNEWS0AA0A", new Dictionary<string, object>()
             {
+                {"parmplid", account.PL_ID},
+                {"parmpgrpid", account.PGRP_ID},
                 {"parmcategory", req.Category},
                 {"parmrownum",req.num_row },
+                {"parmstartdate", req.StartDate },
+                {"parmenddate", req.EndDate },
                 {"parmsearch",req.Search }
             });
             if (results != null)
                 return (Results.Success, STLSubscriberDto.GetNewsList(results.Read<dynamic>(), account.USR_ID, 100));
+            //return (Results.Success, results);
+            return (Results.Null, null);
+        }
+
+        public async Task<(Results result, object item)> Load_CategoryAsync()
+        {
+            var results = _repo.DSpQueryMultiple($"dbo.spfn_BIMSSNEWS0AA0B", new Dictionary<string, object>()
+            {
+                {"parmplid", account.PL_ID},
+                {"parmpgrpid",account.PGRP_ID },
+            });
+            if (results != null)
+                return (Results.Success, STLSubscriberDto.GetNewsCategoryList(results.Read<dynamic>(), account.USR_ID, 100));
             //return (Results.Success, results);
             return (Results.Null, null);
         }

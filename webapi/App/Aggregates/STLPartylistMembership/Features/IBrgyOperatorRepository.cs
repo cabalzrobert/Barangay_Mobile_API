@@ -19,6 +19,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
     {
         Task<(Results result, object bryoptr)> Load_BrgyOperator(FilterRequest req);
         Task<(Results result, object prev)> Load_PrevComAccount(FilterRequest req);
+        Task<(Results result, object prev)> Get_PrevComAccount(string accountid);
     }
     public class BrgyOperatorRepository : IBrgyOperatorRepository
     {
@@ -55,6 +56,18 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                     {"parmusrid", $"{account.PL_ID}{account.USR_ID}" },
                     {"parmrownum", req.NextFilter },
                     {"parmsearch", req.Search }
+                });
+            if (result != null)
+                return (Results.Success, STLSubscriberDto.GetAllChatSenderList(result.Read<dynamic>()));
+
+            return (Results.Null, null);
+        }
+        public async Task<(Results result, object prev)> Get_PrevComAccount(string accountid)
+        {
+            var result = _repo.DSpQueryMultiple($"dbo.spfn_0BA0BBBDB04", new Dictionary<string, object>()
+                {
+                    {"parmusrid", $"{account.PL_ID}{account.USR_ID}" },
+                    {"parmaccountid", accountid },
                 });
             if (result != null)
                 return (Results.Success, STLSubscriberDto.GetAllChatSenderList(result.Read<dynamic>()));

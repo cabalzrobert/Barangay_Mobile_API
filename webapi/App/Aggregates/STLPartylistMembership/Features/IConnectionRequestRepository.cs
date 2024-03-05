@@ -13,6 +13,7 @@ using webapi.App.Aggregates.Common.Dto;
 using webapi.App.RequestModel.Common;
 using webapi.App.RequestModel.Feature;
 using webapi.App.Aggregates.FeatureAggregate;
+using webapi.App.Features.UserFeature;
 
 namespace webapi.App.Aggregates.STLPartylistMembership.Features
 {
@@ -22,6 +23,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         Task<(Results result, object list)> GetConnectionRequestList(int segment);
         Task<(Results result, string message, string reqid)> UpdateConnectionRequest(ConnectionRequest req);
         Task<(Results result, string message)> SendConnectionRequestAsync(ConnectionRequest req);
+        Task<(Results result, object count)> UnattendedRequestAsync();
     }
     public class ConnectionRequestRepository : IConnectionRequestRepository
     {
@@ -91,14 +93,50 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 if (ResultCode == "1")
                 {
                     req.ConnectionRequestId = row["REQ_ID"].Str();
+                    await Stranger_Connection_Request(row, req, account.PL_ID, req.RequestToID);
                     return (Results.Success, "Success");
                 }
-                    
+                else if (ResultCode == "2")
+                {
+                    req.ConnectionRequestId = row["REQ_ID"].Str();
+                    return (Results.Success, "Success");
+                }
+
                 else if (ResultCode == "0")
                     return (Results.Failed, "Failed");
             }
             //return (Results.Null, null, null, null);
             return (Results.Null, null);
+        }
+
+        public async Task<(Results result, object count)> UnattendedRequestAsync()
+        {
+            var result = _repo.DSpQueryMultiple("dbo.spfn_STRNGRQSTCNT", new Dictionary<string, object>(){
+                { "parmplid", account.PL_ID },
+                { "parmpgrpid", account.PGRP_ID },
+                { "parmuserid", account.USR_ID },
+            }).ReadSingleOrDefault();
+            if (result != null)
+            {
+                var row = ((IDictionary<string, object>)result);
+                return (Results.Success, row["UNATTENDEDRQST"].Str());
+            }
+            return (Results.Null, null);
+        }
+
+        public async Task<bool> Stranger_Connection_Request(IDictionary<string, object> row, object content, string plid, string userid)
+        {
+            //var settings = STLSubscriberDto.GetGroup(row);
+            //var notifications = SubscriberDto.EventNofitication(row);
+
+            /*
+             await Pusher.PushAsync($"/{plid}/{userid}/strangerrequest/notify"
+                , new { type = "stranger-request", content = content });
+             */
+
+            await Pusher.PushAsync($"/{plid}/strangerrequest/notify"
+                , new { type = "stranger-request", content = content });
+            return false;
         }
 
         //public async Task<(Results result, string message)> EditDeleteFamily(Family req)

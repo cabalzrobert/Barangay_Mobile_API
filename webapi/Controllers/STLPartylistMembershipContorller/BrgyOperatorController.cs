@@ -59,5 +59,17 @@ namespace webapi.Controllers.STLPartylistMembershipContorller
                 return Ok(new { Status = "error", brgyoptr = result.prev });
             return NotFound();
         }
+
+        [HttpPost]
+        [Route("accountid")]
+        public async Task<IActionResult> Task0f(string accountid)
+        {
+            var result = await _repo.Get_PrevComAccount(accountid);
+            if (result.result == Results.Success)
+                return Ok(new { Status = result.result, brgyoptr = result.prev });
+            else if (result.result != Results.Null)
+                return Ok(new { Status = "error", brgyoptr = result.prev });
+            return NotFound();
+        }
     }
 }
