@@ -238,7 +238,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         LOC_SIT_NM = textInfo.ToTitleCase(row["LOC_SIT_NM"].Str()),
                         PLC_BRT = textInfo.ToTitleCase(row["PLC_BRT"].Str()),
                         HEIGHT = row["HEIGHT"].Str(),
-                        WEIGHT = (row["WEIGHT"].Str().Replace("kg", "") == "") ? 0 : Decimal.Parse(row["WEIGHT"].Str().Replace("kg", "")),
+                        WEIGHT = string.IsNullOrEmpty(row["WEIGHT"].Str()) ? null : row["WEIGHT"].Str(),
                         REL = row["REL"].Str(),
                         DESCRIPTION = row["DESCRIPTION"].Str(),
 

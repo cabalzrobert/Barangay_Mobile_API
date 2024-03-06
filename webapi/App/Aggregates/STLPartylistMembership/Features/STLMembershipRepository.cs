@@ -94,7 +94,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 {"parmusrid",(isUpdate?info.Userid:"") },
                 {"parmrlgn",info.Religion },
                 {"parmhght",info.Height },
-                {"parmwght",info.Weight+"kg" },
+                {"parmwght",info.Weight },
                 {"parmbrtpl",info.Birthplace },
                 //{"parmfrfnm",info?.Father.Firstname ?? null},
                 //{"parmfrmnm",info?.Father.Middlename ?? null},
@@ -237,7 +237,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
 
                 {"parmrlgn",info.Religion },
                 {"parmhght",info.Height },
-                {"parmwght",string.IsNullOrEmpty(info.Weight)?"0":info.Weight+"kg" },
+                {"parmwght",string.IsNullOrEmpty(info.Weight)?null:info.Weight},
                 {"parmbrtpl",info.Birthplace },
 
                 {"parmfrfnm",info.Father?.Firstname ?? null},
