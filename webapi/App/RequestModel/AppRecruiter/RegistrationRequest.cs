@@ -81,6 +81,7 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string SchoolAddress;
         public string SchoolYear;
         public string Course;
+        public Int16 IsRemoved;
     }
     public class Organization 
     {
@@ -148,6 +149,7 @@ namespace webapi.App.RequestModel.AppRecruiter
         public string CompanyAddress;
         public string RenderedFrom;
         public string RenderedTo;
+        public Int16 IsRemoved;
     }
     public class Government_Valid_ID
     {

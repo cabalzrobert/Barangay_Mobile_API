@@ -57,7 +57,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 {"parmschoolname", req.School},
                 {"parmschooladdress", req.SchoolAddress},
                 {"parmschoolyear", req.SchoolYear},
-                {"parmcourse", req.Course}
+                {"parmcourse", req.Course},
+                {"parmsrmv", req.IsRemoved},
             }).FirstOrDefault();
             if (result != null)
             {
@@ -66,10 +67,11 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 if (ResultCode == "1")
                 {
                     req.SEQ_NO = Convert.ToInt32(row["SEQ_NO"].Str());
-                    return (Results.Success, "Successfully save!");
+                    return (Results.Success, "Successfully saved");
                 }
-                else if (ResultCode == "2")
-                    return (Results.Failed, "Please check your data entry. Please try again");
+                else if (ResultCode == "101") return (Results.Success, "Successfully removed");
+                else if (ResultCode == "201")
+                    return (Results.Failed, "Successfully updated");
                 else if (ResultCode == "3")
                     return (Results.Failed, "Duplicate Educational Level. Please try again");
                 return (Results.Failed, "Somethings wrong in your data. Please try again");

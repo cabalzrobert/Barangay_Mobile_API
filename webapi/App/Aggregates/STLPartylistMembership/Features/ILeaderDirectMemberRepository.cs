@@ -22,7 +22,7 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
         Task<(Results result, object member)> LoadMember1(FilterRequest request);
         Task<(Results result, String message)> DirectAddMember(STLMembership membership, bool isUpdate = false);
         Task<(Results result, String message)> PromoteMembertoLeader(STLMembership request);
-        Task<(Results result, String message)> ChangePassowrd(RequiredChangePassword request);
+        Task<(Results result, string message, string otp)> ChangePassowrd(RequiredChangePassword request);
     }
     public class LeaderDirectMemberRepository : ILeaderDirectMemberRepository
     {
@@ -154,12 +154,12 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
             return (Results.Null, null);
         }
 
-        public async Task<(Results result, string message)> ChangePassowrd(RequiredChangePassword request)
+        public async Task<(Results result, string message, string otp)> ChangePassowrd(RequiredChangePassword request)
         {
             var result = _repo.DSpQuery<dynamic>($"dbo.spfn_BDA0A", new Dictionary<string, object>()
             {
-                {"parmplid",request.PLID },
-                {"parmpgrpid",request.PGRPID },
+                {"parmplid",account.PL_ID },
+                {"parmpgrpid",account.PGRP_ID },
                 {"parmusrid", account.USR_ID },
                 {"parmoldpassword",request.OldPassword },
                 {"parmnewpassword",request.Password },
@@ -170,20 +170,22 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 var row = ((IDictionary<string, object>)result);
                 var ResultCode = row["RESULT"].Str();
                 if (ResultCode == "1")
-                    return (Results.Success, "Change Successfull! you can now use your new password");
+                    return (Results.Success, "Change Successfull! you can now use your new password",null);
+                else if (ResultCode == "101")
+                    return (Results.Success, null, row["OTP"].Str());
                 else if (ResultCode == "61")
-                    return (Results.Failed, "Password did not match");
+                    return (Results.Failed, "Password did not match",null);
                 else if (ResultCode == "62")
-                    return (Results.Failed, "You are trying to user your old password, please try again.");
+                    return (Results.Failed, "You are trying to user your old password, please try again.",null);
                 else if (ResultCode == "0")
-                    return (Results.Failed, "Your username or mobile number was not exist, please try again.");
+                    return (Results.Failed, "Your username or mobile number was not exist, please try again.",null);
                 else if (ResultCode == "2")
-                    return (Results.Failed, "You entered wrong password, please try again.");
+                    return (Results.Failed, "You entered wrong password, please try again.",null);
                 else if (ResultCode == "21")
-                    return (Results.Failed, "You are try to access block account, please try again.");
-                return (Results.Null, "Failed to Change! your request is already done");
+                    return (Results.Failed, "You are try to access block account, please try again.",null);
+                return (Results.Null, "Failed to Change! your request is already done",null);
             }
-            return (Results.Null, null);
+            return (Results.Null, null,null);
         }
 
         public async Task<(Results result, object member)> Load_Resident(FilterRequest request)

@@ -112,7 +112,7 @@ namespace webapi.Controllers.STLPartylistMembershipContorller.Features
             var repoResult = await _repo.ChangePassowrd(request);
             if (repoResult.result == Results.Success)
             {
-                return Ok(new { Status = "ok", Message = repoResult.message });
+                return Ok(new { Status = "ok", Message = repoResult.message, OTP=repoResult.otp });
             }
             else if (repoResult.result == Results.Failed)
                 return Ok(new { Status = "error", Message = repoResult.message });
