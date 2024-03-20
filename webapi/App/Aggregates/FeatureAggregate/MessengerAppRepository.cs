@@ -32,6 +32,7 @@ namespace webapi.App.Aggregates.FeatureAggregate
         Task<(Results result, object item)> RequestPersonalChatAsync1(String RequestID);
         Task<(Results result, object item)> GetPreviousChatAsync(String ChatKey, int StartWith);
         Task<(Results result, object item)> SendMessageAsync(String ChatKey, MessengerAppRequest request);
+        Task<(Results result, object item)> IncomingCallAsync(String ChatKey);
         Task<(Results result, object items)> GetPreviousChatsAsync(String LastChatTimestamp);
         Task<(Results result, object items)> GetRecentChatsAsync();
         Task<(Results result, int UnReadMessage, String message)> ChatMessageReadAsync(MessengerAppRequest req);
@@ -68,6 +69,12 @@ namespace webapi.App.Aggregates.FeatureAggregate
                     return (Results.Failed,  0, "License was not valid");
             }
             return (Results.Null, 0, null);
+        }
+
+        public async Task<(Results result, object item)> IncomingCallAsync(string ChatKey)
+        {
+            await notifyIncomingCall(ChatKey, account.USR_ID);
+            return (Results.Success, null);
         }
         public async Task<(Results result, object item)> ChatMessageIsReadAsync(MessengerAppRequest req)
         {
@@ -507,7 +514,8 @@ namespace webapi.App.Aggregates.FeatureAggregate
             return data;
         }
 
-        
+
+
         private async Task<bool> notifyChat(String ChatKey, IDictionary<string, object> row, String MemberID = "")
         {
             //if(row["IsPublicChat"].Str().Equals("1")) return;
@@ -563,6 +571,13 @@ namespace webapi.App.Aggregates.FeatureAggregate
                 await Pusher.PushAsync($"/{account.PL_ID}/{MemberID.Remove(0,4)}/receivedchat", new { type = "personal", content = conversation });
             }
             return false;
+        }
+
+        private async Task<bool> notifyIncomingCall(String ChatKey, string MemberID = "")
+        {
+            //await Pusher.PushAsync($"/{account.PL_ID}/{account.PGRP_ID}/{MemberID}/chatmessageread", new { type = "chatmessage", content = list, MemberID = MemberID });
+            await Pusher.PushAsync($"/{account.PL_ID}/{MemberID}/incomingcall", new { type = "incomingcall", MemberID = MemberID });
+            return true;
         }
 
     }
