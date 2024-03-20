@@ -87,6 +87,8 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
             //stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/chatmessageread", this.ChatMessageIsReadNotication);
 
             stack.subscribe($"/{account.PL_ID}/{account.USR_ID}/chatmessageread", this.ChatMessageIsReadNotication);
+            stack.subscribe($"/{account.PL_ID}/{account.USR_ID}/incomingcall", this.IncomingCallNotication);
+
             //stack.subscribe($"/{account.CompanyID}/{account.BranchID}/arena", this.receivedBranchArena);
             //stack.subscribe($"/{account.PL_ID}/{account.PGRP_ID}/{account.USR_ID}/chat", this.receivedSubscriberChat);
             /*Send Message Notification*/
@@ -128,6 +130,10 @@ namespace webapi.App.Aggregates.SubscriberAppAggregate.Features
         private void ChatMessageIsReadNotication(Ultralight.StompMessage message)
         {
             stomp("/chatmessageread", message.Body);
+        }
+        private void IncomingCallNotication(Ultralight.StompMessage message)
+        {
+            stomp("/incomingcall", message.Body);
         }
         private void receivedBranchArena(Ultralight.StompMessage message){
             stomp("/arena", message.Body);

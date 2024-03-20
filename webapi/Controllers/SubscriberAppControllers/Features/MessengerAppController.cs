@@ -82,7 +82,19 @@ namespace webapi.Controllers.SubscriberAppControllers.Features
                 return Ok(repoResult.item);
             return NotFound();
         }
-
+       
+        
+        [HttpPost]
+        [Route("incomingcall/{ChatKey}")]
+        public async Task<IActionResult> incomingcall(string ChatKey)
+        {
+            //await notifyIncomingCall(ChatKey, account.USR_ID);
+            var result = await _appRepo.IncomingCallAsync(ChatKey);
+            if (result.result == Results.Success)
+                return Ok(new { status = "ok" });
+            return NotFound();
+        }
+        
         [HttpPost]
         [Route("s/{LastChatTimestamp}")]
         public async Task<IActionResult> Task0e(String LastChatTimestamp){
@@ -125,6 +137,7 @@ namespace webapi.Controllers.SubscriberAppControllers.Features
                 return Ok(repoResult.item);
             return NotFound();
         }
+
 
         public static async Task<(Results result, string message)> validity(STLAccount account, String ChatKey, MessengerAppRequest request){
             if(request == null || ChatKey.IsEmpty()) return (Results.Null, null);
