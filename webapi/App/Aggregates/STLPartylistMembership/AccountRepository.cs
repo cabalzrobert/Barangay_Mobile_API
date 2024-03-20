@@ -292,7 +292,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership
                         SPERM_RES = (bool)row["SPERM_RES"],
                         FRNT_ID = row["FRNT_ID"].Str(),
                         BCK_ID = row["BCK_ID"].Str(),
-                        IS_MOB_ACNT_VRFD = (bool)row["IS_MOB_ACNT_VRFD"]
+                        IS_MOB_ACNT_VRFD = (bool)row["IS_MOB_ACNT_VRFD"],
+                        LST_CHNG_PSSWRD = (DateTime?)row["LST_CHNG_PSSWRD"]
                     });
                 }
                 else if (ResultCode == "52")
