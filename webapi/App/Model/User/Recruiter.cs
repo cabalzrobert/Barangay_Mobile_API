@@ -40,7 +40,7 @@ namespace webapi.App.Model.User
 
         public string PLC_BRT;
         public string HEIGHT;
-        public decimal WEIGHT;
+        public string WEIGHT;
         public string REL;
         public string DESCRIPTION;
 

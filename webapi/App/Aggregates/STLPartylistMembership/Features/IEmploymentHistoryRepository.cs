@@ -57,7 +57,8 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 {"parmcompany", req.Company},
                 {"parmaddress", req.CompanyAddress},
                 {"parmrenderedfrom", string.IsNullOrEmpty(req.RenderedFrom)?null:Convert.ToDateTime(req.RenderedFrom).ToString("MMM dd, yyyy")},
-                {"parmrenderedto", string.IsNullOrEmpty(req.RenderedTo)?null:Convert.ToDateTime(req.RenderedTo).ToString("MMM dd, yyyy")}
+                {"parmrenderedto", string.IsNullOrEmpty(req.RenderedTo)?null:Convert.ToDateTime(req.RenderedTo).ToString("MMM dd, yyyy")},
+                {"parmsrmv", req.IsRemoved }
             }).FirstOrDefault();
             if (result != null)
             {
@@ -65,13 +66,17 @@ namespace webapi.App.Aggregates.STLPartylistMembership.Features
                 string ResultCode = row["RESULT"].Str();
                 if (ResultCode == "1")
                 {
-                    req.SEQ_NO = Convert.ToInt32(row["SEQ_NO"].Str());
-                    req.RenderedFrom = Convert.ToDateTime(req.RenderedFrom).ToString("MMM dd, yyyy");
-                    req.RenderedTo = (req.RenderedTo.IsEmpty()) ? "Present" : Convert.ToDateTime(req.RenderedTo).ToString("MMM dd, yyyy");
-                    return (Results.Success, "Successfully save!");
+                    if (!string.IsNullOrEmpty(req.RenderedFrom))
+                    {
+                        req.SEQ_NO = Convert.ToInt32(row["SEQ_NO"].Str());
+                        req.RenderedFrom = Convert.ToDateTime(req.RenderedFrom).ToString("MMM dd, yyyy");
+                        req.RenderedTo = (req.RenderedTo.IsEmpty()) ? "Present" : Convert.ToDateTime(req.RenderedTo).ToString("MMM dd, yyyy");
+                    }
+                    return (Results.Success, "Successfully saved");
                 }
-                else if (ResultCode == "2")
-                    return (Results.Failed, "Please check your data entry. Please try again");
+                if (ResultCode == "101") return (Results.Success, "Successfully removed");
+                else if (ResultCode == "201")
+                    return (Results.Success, "Successfully updated");
                 return (Results.Failed, "Somethings wrong in your data. Please try again");
             }
             return (Results.Null, null);
