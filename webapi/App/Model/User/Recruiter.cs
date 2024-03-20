@@ -98,6 +98,7 @@ namespace webapi.App.Model.User
         public string BCK_ID;
         public string MemberID;
         public bool IS_MOB_ACNT_VRFD;
+        public DateTime? LST_CHNG_PSSWRD;
 
         public class Person
         {
